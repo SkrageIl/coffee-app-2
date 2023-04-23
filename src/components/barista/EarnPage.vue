@@ -127,7 +127,7 @@ export default {
       let selectedEndTimeFormat = moment(this.range.end).format('DD-MM-YYYY')
       selectedStartTimeFormat = moment(selectedStartTimeFormat, 'DD-MM-YYYY')
       selectedEndTimeFormat = moment(selectedEndTimeFormat, 'DD-MM-YYYY')
-
+      
       let DaysSelectedDetails = this.BARISTA_COMPLETED_ORDERS.reduce((arr, order) => {
         const timeOrderFormat = moment(order.time, 'DD-MM-YYYY HH:mm').startOf('day')
         if (timeOrderFormat.isBetween(selectedStartTimeFormat, selectedEndTimeFormat, 'day', '[]')) {
