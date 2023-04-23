@@ -3,13 +3,12 @@
     <div class="main-menu">
       <button class="main-menu__btn" @click="this.$router.push('/barista')">Бариста</button>
       <button class="main-menu__btn" @click="this.$router.push('/admin')">Администратор</button>
-      <button class="main-menu__btn exit" @click="logOut">Выйти</button>
+      <button class="main-menu__btn exit" @click="this.logout">Выйти</button>
     </div>
   </div>
 </template>
 
 <script>
-import {mapActions} from 'vuex'
 
 export default {
   name: "MainWrapper",
@@ -20,13 +19,12 @@ export default {
   },
   props: {},
   methods: {
-    ...mapActions([
-      'logout'
-    ]),
-    logOut(){
-      this.logout()
-      this.$router.push('/')
-    }
+    logout: function () {
+      this.$store.dispatch('logout')
+      .then(() => {
+        this.$router.push('/login')
+      })
+    },
   }
 }
 </script>
@@ -34,7 +32,7 @@ export default {
 <style lang="scss" scoped>
 .main-page{
   display: grid;
-  margin-top: 250px;
+  margin-top: 50%;
   justify-content: center;
 }
 .main-menu{

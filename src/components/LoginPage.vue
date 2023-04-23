@@ -89,7 +89,7 @@ export default {
 .login-form{
   border-radius: 25px;
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   background: #fff;
@@ -184,5 +184,8 @@ export default {
       width: 75%;
     }
   }
+}
+@media(max-width: 576px){
+  
 }
 </style>

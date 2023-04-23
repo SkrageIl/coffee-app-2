@@ -5,15 +5,14 @@
   <div class="barista-menu">
     <router-link :to="{name:'orders'}" class="barista-menu__btn">Заказы</router-link>
     <router-link :to="{name:'earning'}" class="barista-menu__btn">Заработок</router-link>
-    <button @click="this.logOut" class="barista-menu__btn exit">Выйти</button>
+    <button @click="this.logout" class="barista-menu__btn exit">Выйти</button>
   </div>
 </div>
-<router-view class="wrapper"></router-view>
+<router-view class="wrapper-barista"></router-view>
 </template>
 
 <script>
 import CoffeeHeader from '../CoffeeHeader.vue'
-import {mapActions} from 'vuex'
 
 
 export default {
@@ -57,13 +56,12 @@ data() {
 computed: {
 },
 methods: {
-    ...mapActions([
-      'logout'
-    ]),
-    logOut(){
-      this.logout()
-      this.$router.push('/')
-    }
+    logout: function () {
+      this.$store.dispatch('logout')
+      .then(() => {
+        this.$router.push('/')
+      })
+    },
   }
 }
 </script>
@@ -71,7 +69,7 @@ methods: {
 <style lang="scss" scoped>
 .barista-page{
   display: grid;
-  margin-top: 250px;
+  margin-top: 50%;
   justify-content: center;
 }
 .barista-menu{
@@ -107,7 +105,7 @@ methods: {
   width: 100px;
   justify-self: center;
 }
-.wrapper{
+.wrapper-barista{
   margin-top: 6em;
   margin-left: 55px;
 }

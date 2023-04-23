@@ -127,7 +127,7 @@ export default {
       let selectedEndTimeFormat = moment(this.range.end).format('DD-MM-YYYY')
       selectedStartTimeFormat = moment(selectedStartTimeFormat, 'DD-MM-YYYY')
       selectedEndTimeFormat = moment(selectedEndTimeFormat, 'DD-MM-YYYY')
-      
+
       let DaysSelectedDetails = this.BARISTA_COMPLETED_ORDERS.reduce((arr, order) => {
         const timeOrderFormat = moment(order.time, 'DD-MM-YYYY HH:mm').startOf('day')
         if (timeOrderFormat.isBetween(selectedStartTimeFormat, selectedEndTimeFormat, 'day', '[]')) {
@@ -311,5 +311,58 @@ export default {
   font-size: 20px;
   background-color: #10f9333b;
   padding: 20px 12%;
+}
+@media(max-width: 576px){
+  .header{
+    &__details{
+      font-size: 0.8em;
+    }
+    &__block{
+      padding: 1em;
+    }
+  }
+  .calendar{
+    &__inputs{
+      display: flex;
+      align-items: center;
+    }
+    &__content{
+      margin-right: 1em;
+    }
+    &__input{
+      width: 90px;
+    height: fit-content;
+    padding: 5px;
+    margin: 0;
+    font-size: 1em;
+    }
+    &__icon{
+      font-size: 30px;
+      padding: 4px 5px 5px;
+    }
+    &__btn{
+      font-size: 50px;
+      width: fit-content;
+      display: flex;
+      margin-right: 0;
+    }
+  }
+  .accord-order{
+    &__days-title{
+      font-size: 1em;
+    }
+    &__days-earning{
+      font-size: 1em;
+    }
+    &__item{
+      font-size: 1em;
+    }
+    &__days{
+      padding: 10px;
+    }
+  }
+  .earning-selected{
+    font-size: 1em;
+  }
 }
 </style>

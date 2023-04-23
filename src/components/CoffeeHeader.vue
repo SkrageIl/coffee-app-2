@@ -30,11 +30,16 @@ export default {
   },
   methods: {
     ...mapActions([
-      'logout',
       'OPEN_MODAL'
     ]),
     openModal(){
       this.OPEN_MODAL()
+    },
+    logout: function () {
+      this.$store.dispatch('logout')
+      .then(() => {
+        this.$router.push('/')
+      })
     },
     goBack(){
       if (this.$route.path.includes('profile')) {
@@ -78,11 +83,11 @@ export default {
 }
 .logout{
   color: white;
-  font-size: 45px;
+  font-size: 35px;
   font-weight: 800;
   position: fixed;
-    right: 20px;
-    top: 20px;
+  right: 25px;
+  top: 25px;
 }
 .back-popup-btn{
   position: fixed;
@@ -97,6 +102,7 @@ export default {
 .header{
   position: fixed;
   width: 100%;
+  left: 0;
   height: 5em;
   margin-top: 0;
   background-color: #3a3939;
@@ -109,7 +115,7 @@ export default {
     width: auto;
     height: 3.2em;
     margin-top: 1em;
-    margin-right: 20px;
+    margin-left: 50px;
   }
   &__logo-title{
     width: 6em;

@@ -34,6 +34,9 @@
   </nav>
   <div class="current-orders" v-if="isCurrent">
     <h2>Текущие заказы</h2>
+    <div class="search">
+      <input v-model="searchCurrent" type="search" placeholder="Поиск клиента...">
+    </div>
     <AccordionList open-multiple-items>
       <AccordionItem v-for="baristaOrder in currentOrders" :key="baristaOrder.id" class="accor-order__item">
         <template #summary>
@@ -51,6 +54,9 @@
   </div>
   <div class="comleted-orders" v-else>
     <h2>Выполненные заказы</h2>
+    <div class="search">
+      <input v-model="searchCompleted" type="search" placeholder="Поиск клиента...">
+    </div>
     <AccordionList open-multiple-items>
       <AccordionItem v-for="baristaOrder in completedDateOrders" :key="baristaOrder.id" class="accor-order__item">
         <template #summary>
@@ -98,7 +104,9 @@ data() {
   return {
     interval: null,
     isCurrent: true,
-    date: ref(new Date())
+    date: ref(new Date()),
+    searchCurrent: '',
+    searchCompleted: ''
   }
 },
 computed: {
@@ -107,8 +115,15 @@ computed: {
     'BARISTA_COMPLETED_ORDERS'
   ]),
   currentOrders(){
+    let search = this.searchCurrent
     return this.BARISTA_CURRENT_ORDERS.filter(function(order){
-      return order.status != "Завершен"
+      if (order.status != "Завершен") {
+        console.log(order.client.tel.slice(-4))
+        if (search == "" || order.client.name.toLowerCase().includes(search.toLowerCase())
+            || order.client.tel.slice(-4) == search){
+          return true
+        }
+      } else return false
     }).sort((a,b) => this.formatTime(a.time) > this.formatTime(b.time) ? 1 : -1)
   },
   currentCompletedOrders(){
@@ -117,18 +132,22 @@ computed: {
     })
   },
   completedDateOrders(){
+    let search = this.searchCompleted
     let selectedTimeFormat = moment(this.date).format('DD-MM-YYYY')
     let nowTimeFormat = moment().format('DD-MM-YYYY')
 
     if (selectedTimeFormat == nowTimeFormat || selectedTimeFormat == 'Invalid date') {
       return this.currentCompletedOrders.filter(function(order){
         let timeOrderFormat = moment(order.time, 'DD-MM-YYYY HH:mm').format('DD-MM-YYYY')
-        return (timeOrderFormat == selectedTimeFormat || (selectedTimeFormat == 'Invalid date' && timeOrderFormat == nowTimeFormat))
+        return ((timeOrderFormat == selectedTimeFormat || 
+                (selectedTimeFormat == 'Invalid date' && timeOrderFormat == nowTimeFormat)) 
+                && (search == "" || order.client.name.toLowerCase().includes(search.toLowerCase()) || order.client.tel.slice(-4) == search))
     }).sort((a,b) => this.formatTime(a.time) > this.formatTime(b.time) ? 1 : -1)
     } else {
         return this.BARISTA_COMPLETED_ORDERS.filter(function(order){
           let timeOrderFormat = moment(order.time, 'DD-MM-YYYY HH:mm').format('DD-MM-YYYY')
-          return (timeOrderFormat == selectedTimeFormat)
+          return (timeOrderFormat == selectedTimeFormat  
+                  && (search == "" || order.client.name.toLowerCase().includes(search.toLowerCase())))
         }).sort((a,b) => this.formatTime(a.time) < this.formatTime(b.time) ? 1 : -1)
     }
   },
@@ -166,7 +185,25 @@ methods: {
   logOut(){
       this.logout()
       this.$router.push('/')
+  },
+  currentOrdersBySearch(searchString){
+    if(searchString != ""){
+      return this.currentOrders.filter(function(order){
+        return order.client.name.toLowerCase().includes(searchString.toLowerCase())
+      })
+    }else {
+      return this.currentOrders
     }
+  },
+  completedDateOrdersBySearch(searchString){
+    if(searchString != ""){
+      return this.completedDateOrders.filter(function(order){
+        return order.client.name.toLowerCase().includes(searchString.toLowerCase())
+      })
+    }else {
+      return this.completedDateOrders
+    }
+  }
 }
 }
 </script>
@@ -195,6 +232,7 @@ methods: {
   margin-right: 1em;
   font-weight: 600;
   font-size: 1.5em;
+  align-items: center;
 }
 .selected{
   background-color: #3a3939;
@@ -270,7 +308,6 @@ ul{
   font-size: 25px;
   color: #228B22;
   padding: 10px;
-  width: 5em;
   text-align: end;
 }
 .cook{
@@ -281,5 +318,62 @@ ul{
 }
 .done{
   color: green !important;
+}
+.search{
+  display: flex;
+  margin: 0 30px;
+  input{
+    font-size: 20px;
+    padding: 10px;
+    width: 50%;
+    border-radius: 5px;
+  }
+}
+@media(max-width: 576px){
+  .accor-order{
+    &__title{
+      font-size: 1em;
+      width: 100px;
+    }
+    &__status{
+      font-size: 0.9em;
+    }
+  }
+  .barista-earn{
+    font-size: 1em;
+  }
+  .nav-orders{
+    &__btn{
+      font-size: 0.8em;
+    }
+  }
+  .earningPercent{
+    font-size: 1em;
+    padding: 0;
+  }
+  .calendar{
+    &__btn{
+      margin-right: 0;
+    }
+    &__icon{
+      font-size: 2em;
+      padding: 4px 5px 5px;
+    }
+    &__input{
+      width: 85px;
+      padding: 5px;
+      margin: 10px;
+      margin-left: 0;
+      font-size: 1em;
+    }
+    &__input-block{
+      margin-left: 1em;
+    }
+  }
+  .search{
+    input{
+      width: 100%;
+    }
+  }
 }
 </style>

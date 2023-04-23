@@ -3,9 +3,12 @@ import store from '../vuexStore/store'
 import LoginPage from '@/components/LoginPage.vue'
 import MainWrapper from '@/components/MainWrapper.vue'
 import BaristaPage from '@/components/barista/BaristaPage.vue'
-import AdminPage from '@/components/admin/AdminPage.vue'
 import OrdersPage from '@/components/barista/OrdersPage.vue'
 import EarnPage from '@/components/barista/EarnPage.vue'
+import AdminPage from '@/components/admin/AdminPage.vue'
+import CoffeeshopsPage from '@/components/admin/CoffeeshopsPage.vue'
+import ProductsPage from '@/components/admin/ProductsPage.vue'
+import WorkersPage from '@/components/admin/WorkersPage.vue'
 
 const router = createRouter({
     routes: [{
@@ -52,17 +55,24 @@ const router = createRouter({
             meta: {
                 requiresAuth: true,
                 requiresRoleAdmin: true
-            }
+            },
+            children: [{
+                    path: 'coffeeshops',
+                    name: 'coffeeshops',
+                    component: CoffeeshopsPage
+                },
+                {
+                    path: 'products',
+                    name: 'products',
+                    component: ProductsPage
+                },
+                {
+                    path: 'workers',
+                    name: 'workers',
+                    component: WorkersPage
+                }
+            ]
         },
-        // {
-        //     path: '/barista',
-        //     name: 'barista',
-        //     component: BaristaPage,
-        //     props: true,
-        //     meta: {
-        //         requiresRole: true
-        //     }
-        // },
     ],
     history: createWebHistory()
 })

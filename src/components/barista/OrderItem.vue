@@ -84,12 +84,13 @@ li{
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   font-size: 20px;
+  justify-content: center;
   font-weight: 600;
   font-family: 'Montserrat', sans-serif;
   margin: 2em 0;
 }
 span{
-  text-align: left;
+  text-align: end;
   margin-bottom: 10px;
 }
 .order-item{
@@ -117,9 +118,10 @@ span{
   &__total-btn{
     margin-left: 1em;
     color: white;
-    padding: 20px;
+    padding: 1em;
+    font-size: 0.8em;
+    width: 200px;
     font-weight: 800;
-    font-size: 22px;
     border-radius: 22px;
     border: 0;
     -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
@@ -137,5 +139,24 @@ span{
 }
 .ready{
   background-color: green !important;
+}
+
+@media(max-width: 576px){
+  li{
+    font-size: 0.7em;
+  }
+  .orders{
+    &__total{
+      font-size: 1em;
+    }
+    &__total-title{
+      margin-right: 0.5em;
+    }
+    &__total-btn{
+      padding: 0.5em;
+      font-size: 0.8em;
+      width: 100px;
+    }
+  }
 }
 </style>
