@@ -11,7 +11,9 @@ import { useAccordion } from "vue3-rich-accordion"
 import VCalendar from 'v-calendar';
 import VueSidebarMenu from 'vue-sidebar-menu'
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
-import 'v-calendar/style.css';
+import 'v-calendar/style.css'
+import vClickOutside from "click-outside-vue3"
+import { vfmPlugin } from 'vue-final-modal'
 
 const app = createApp(App)
 app.use(store)
@@ -22,6 +24,8 @@ app.use(Notifications)
 app.use(useAccordion)
 app.use(VCalendar, {})
 app.use(VueSidebarMenu)
+app.use(vClickOutside)
+app.use(vfmPlugin)
 app.mount('#app')
 
 app.config.globalProperties.$http = axios

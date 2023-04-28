@@ -35,7 +35,7 @@ export default {
         icon: {
           element: 'span',
           class: 'material-icons',
-          text: 'assignment'
+          text: 'coffee'
         }
       },
       {
@@ -44,7 +44,7 @@ export default {
         icon: {
           element: 'span',
           class: 'material-icons',
-          text: 'payments'
+          text: 'groups'
         }
       },
       {
@@ -53,7 +53,7 @@ export default {
         icon: {
           element: 'span',
           class: 'material-icons',
-          text: 'payments'
+          text: 'store'
         }
       }
     ]
@@ -113,5 +113,10 @@ export default {
 .wrapper-admin{
   margin-top: 6em;
   margin-left: 55px;
+}
+@media(min-width: 900px){
+  .admin-page{
+    margin-top: 200px;
+  }
 }
 </style>

@@ -11,7 +11,9 @@ let store = createStore({
         shops: [],
         order: {},
         baristaCurrentOrders: [],
-        baristaCompletedOrders: []
+        baristaCompletedOrders: [],
+        drinks: [],
+        foods: []
     },
     mutations: {
         auth_request(state) {
@@ -42,6 +44,12 @@ let store = createStore({
                     item.status = order.status
                 }
             })
+        },
+        SET_DRINKS_TO_STATE: (state, drinks) => {
+            state.drinks = drinks;
+        },
+        SET_FOODS_TO_STATE: (state, foods) => {
+            state.foods = foods;
         },
         OPEN_MODAL(state) {
             state.isModal = true
@@ -129,8 +137,6 @@ let store = createStore({
                 })
         },
         CHANGE_BARISTA_ORDER_STATUS({ commit }, order) {
-            console.log(order.status)
-            console.log(order.id)
             return new Promise((resolve, reject) => {
                 axios('http://localhost:3000/orders/' + order.id, {
                         data: {
@@ -147,6 +153,158 @@ let store = createStore({
                         reject(err)
                     })
             })
+        },
+        DELETE_FOOD_ITEM_FROM_DB({ dispatch }, id) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/foods/' + id, {
+                        method: 'DELETE'
+                    })
+                    .then(() => {
+                        dispatch('GET_FOODS_FROM_DB')
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
+        DELETE_DRINK_ITEM_FROM_DB({ dispatch }, id) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/drinks/' + id, {
+                        method: 'DELETE'
+                    })
+                    .then(() => {
+                        dispatch('GET_DRINKS_FROM_DB')
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
+        CHANGE_DRINK_ITEM_TO_DB({ dispatch }, product) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/drinks/' + product.id, {
+                        data: {
+                            "id": product.id,
+                            "name": product.name,
+                            "article": product.article,
+                            "image": product.image,
+                            "price": product.price,
+                            "quantity": product.quantity,
+                            "type": product.type,
+                            "title": product.title
+                        },
+                        method: 'PATCH'
+                    })
+                    .then(() => {
+                        dispatch('GET_DRINKS_FROM_DB')
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
+        CHANGE_FOOD_ITEM_TO_DB({ dispatch }, product) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/foods/' + product.id, {
+                        data: {
+                            "id": product.id,
+                            "name": product.name,
+                            "article": product.article,
+                            "image": product.image,
+                            "price": product.price,
+                            "quantity": 0,
+                            "type": product.type,
+                            "title": product.title
+                        },
+                        method: 'PATCH'
+                    })
+                    .then(() => {
+                        dispatch('GET_FOODS_FROM_DB')
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
+        ADD_FOOD_ITEM_TO_DB({ dispatch }, product) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/foods/', {
+                        data: {
+                            "id": product.id,
+                            "name": product.name,
+                            "article": product.article,
+                            "image": product.image,
+                            "price": product.price,
+                            "quantity": 0,
+                            "type": product.type,
+                            "title": product.title
+                        },
+                        method: 'POST'
+                    })
+                    .then(() => {
+                        dispatch('GET_FOODS_FROM_DB')
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
+        ADD_DRINK_ITEM_TO_DB({ dispatch }, product) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/drinks/', {
+                        data: {
+                            "id": product.id,
+                            "name": product.name,
+                            "article": product.article,
+                            "image": product.image,
+                            "price": product.price,
+                            "quantity": 0,
+                            "type": product.type,
+                            "title": product.title
+                        },
+                        method: 'POST'
+                    })
+                    .then(() => {
+                        dispatch('GET_DRINKS_FROM_DB')
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
+        GET_DRINKS_FROM_DB({ commit }) {
+            return axios('http://localhost:3000/drinks', {
+                    method: "GET"
+                })
+                .then((drinks) => {
+                    commit('SET_DRINKS_TO_STATE', drinks.data);
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        },
+        GET_FOODS_FROM_DB({ commit }) {
+            return axios('http://localhost:3000/foods', {
+                    method: "GET"
+                })
+                .then((foods) => {
+                    commit('SET_FOODS_TO_STATE', foods.data);
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
         }
     },
     getters: {
@@ -158,6 +316,12 @@ let store = createStore({
         },
         USER(state) {
             return state.user;
+        },
+        DRINKS(state) {
+            return state.drinks;
+        },
+        FOODS(state) {
+            return state.foods;
         },
         isLoggedIn: state => !!state.token,
         authStatus: state => state.status,

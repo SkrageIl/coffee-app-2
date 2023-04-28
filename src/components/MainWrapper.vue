@@ -67,4 +67,9 @@ export default {
   width: 100px;
   justify-self: center;
 }
+@media(min-width: 900px){
+  .main-page{
+    margin-top: 200px;
+  }
+}
 </style>
