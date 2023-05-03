@@ -13,7 +13,8 @@ let store = createStore({
         baristaCurrentOrders: [],
         baristaCompletedOrders: [],
         drinks: [],
-        foods: []
+        foods: [],
+        workers: []
     },
     mutations: {
         auth_request(state) {
@@ -56,6 +57,12 @@ let store = createStore({
         },
         CLOSE_MODAL(state) {
             state.isModal = false
+        },
+        SET_WORKERS_TO_STATE(state, workers) {
+            state.workers = workers
+        },
+        SET_SHOPS_TO_STATE: (state, shops) => {
+            state.shops = shops
         },
     },
     actions: {
@@ -305,24 +312,152 @@ let store = createStore({
                 .catch((error) => {
                     console.log(error)
                 })
-        }
+        },
+        GET_WORKERS_FROM_DB({ commit }) {
+            return axios('http://localhost:3000/users', {
+                    method: "GET"
+                })
+                .then((workers) => {
+                    workers = workers.data.filter(worker => worker.role == "barista")
+                    commit('SET_WORKERS_TO_STATE', workers)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        },
+        DELETE_WORKER_ITEM_FROM_DB({ dispatch }, id) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/users/' + id, {
+                        method: 'DELETE'
+                    })
+                    .then(() => {
+                        dispatch('GET_WORKERS_FROM_DB')
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
+        CHANGE_WORKER_ITEM_TO_DB({ dispatch }, worker) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/users/' + worker.id, {
+                        data: {
+                            "name": worker.name,
+                            "tel": worker.tel,
+                            "depart": worker.depart
+                        },
+                        method: 'PATCH'
+                    })
+                    .then(() => {
+                        dispatch('GET_WORKERS_FROM_DB')
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
+        ADD_WORKER_ITEM_TO_DB({ dispatch }, worker) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/users/', {
+                        data: {
+                            "name": worker.name,
+                            "tel": worker.tel,
+                            "password": worker.password,
+                            "role": "barista",
+                            "depart": worker.depart,
+                            "token": "SomeToken1"
+                        },
+                        method: 'POST'
+                    })
+                    .then(() => {
+                        dispatch('GET_WORKERS_FROM_DB')
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
+        GET_SHOPS_FROM_DB({ commit }) {
+            return axios('http://localhost:3000/shops', {
+                    method: "GET"
+                })
+                .then((shops) => {
+                    commit('SET_SHOPS_TO_STATE', shops.data)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        },
+        DELETE_SHOP_ITEM_FROM_DB({ dispatch }, id) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/shops/' + id, {
+                        method: 'DELETE'
+                    })
+                    .then(() => {
+                        dispatch('GET_SHOPS_FROM_DB')
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
+        CHANGE_SHOP_ITEM_TO_DB({ dispatch }, shop) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/shops/' + shop.id, {
+                        data: {
+                            "address": shop.address,
+                            "time": shop.time,
+                            "phone": shop.phone
+                        },
+                        method: 'PATCH'
+                    })
+                    .then(() => {
+                        dispatch('GET_SHOPS_FROM_DB')
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
+        ADD_SHOP_ITEM_TO_DB({ dispatch }, shop) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/shops/', {
+                        data: {
+                            "address": shop.address,
+                            "time": shop.time,
+                            "phone": shop.phone
+                        },
+                        method: 'POST'
+                    })
+                    .then(() => {
+                        dispatch('GET_SHOPS_FROM_DB')
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
     },
     getters: {
-        BARISTA_CURRENT_ORDERS(state) {
-            return state.baristaCurrentOrders
-        },
-        BARISTA_COMPLETED_ORDERS(state) {
-            return state.baristaCompletedOrders
-        },
-        USER(state) {
-            return state.user;
-        },
-        DRINKS(state) {
-            return state.drinks;
-        },
-        FOODS(state) {
-            return state.foods;
-        },
+        BARISTA_CURRENT_ORDERS: state => state.baristaCurrentOrders,
+        BARISTA_COMPLETED_ORDERS: state => state.baristaCompletedOrders,
+        USER: state => state.user,
+        DRINKS: state => state.drinks,
+        FOODS: state => state.foods,
+        WORKERS: state => state.workers,
+        SHOPS: state => state.shops,
         isLoggedIn: state => !!state.token,
         authStatus: state => state.status,
         isBarista: state => {

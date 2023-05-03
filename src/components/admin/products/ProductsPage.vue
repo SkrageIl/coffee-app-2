@@ -1,6 +1,7 @@
 <template>
-  <div class="product-page">
-    <div class="products">
+  <div class="products-page">
+    <ProductsNavBar class="nav-bar"/>
+    <div id="coffee" class="products">
       <div class="products__top-content">
         <h3 class="products__title">Кофе</h3>
         <button class="products__add" @click="openAddModal('Кофе')">Добавить &#43;</button>
@@ -11,7 +12,7 @@
         :product_data="drink"
       />
     </div>
-    <div class="products">
+    <div id="tea" class="products">
       <div class="products__top-content">
         <h3 class="products__title">Чай</h3>
         <button class="products__add" @click="openAddModal('Чай')">Добавить &#43;</button>
@@ -22,7 +23,7 @@
         :product_data="drink"
       />
     </div>
-    <div class="products">
+    <div id="sweet" class="products">
       <div class="products__top-content">
         <h3 class="products__title">Сладости</h3>
         <button class="products__add" @click="openAddModal('Сладкое')">Добавить &#43;</button>
@@ -33,7 +34,7 @@
         :product_data="drink"
       />
     </div>
-    <div class="products">
+    <div id="meal" class="products">
       <div class="products__top-content">
         <h3 class="products__title">Закуски</h3>
         <button class="products__add" @click="openAddModal('Сытное')">Добавить &#43;</button>
@@ -50,22 +51,24 @@
       :drag="false"
       classes="modal-container"
       content-class="modal-content modal-item">
-        <ModalAddItem :typeProp="this.type"/>
+        <ModalAddProduct :typeProp="this.type"/>
     </vue-final-modal>
   </div>
 </template>
 
 <script>
-import {ref} from 'vue';
+import {ref} from 'vue'
 import { mapActions, mapGetters } from 'vuex'
 import ProductItem from './ProductItem.vue'
-import ModalAddItem from './ModalAddItem.vue';
+import ModalAddProduct from './ModalAddProduct.vue'
+import ProductsNavBar from './ProductsNavBar.vue'
 
 export default {
   name: "ProductsPage",
   components:{
     ProductItem,
-    ModalAddItem
+    ModalAddProduct,
+    ProductsNavBar
   },
   mounted() {
     this.GET_DRINKS_FROM_DB()
@@ -122,9 +125,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#coffee{
+  margin-top: 150px;
+}
 .products{
   display: grid;
   grid-template-columns: 1fr 1fr;
+  margin-top: 50px;
   &__top-content{
     grid-column: span 2;
     margin-left: 25px;
@@ -147,5 +154,13 @@ export default {
     font-weight: 700;
     text-align: left;
   }
+}
+.nav-bar{
+  overflow-x: scroll;
+  overflow: hidden;
+  padding: 1.25em 0;
+  position: fixed;
+  top: 4em;
+  width: 100%;
 }
 </style>

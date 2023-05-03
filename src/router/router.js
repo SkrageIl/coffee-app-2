@@ -6,11 +6,20 @@ import BaristaPage from '@/components/barista/BaristaPage.vue'
 import OrdersPage from '@/components/barista/OrdersPage.vue'
 import EarnPage from '@/components/barista/EarnPage.vue'
 import AdminPage from '@/components/admin/AdminPage.vue'
-import CoffeeshopsPage from '@/components/admin/CoffeeshopsPage.vue'
-import ProductsPage from '@/components/admin/ProductsPage.vue'
-import WorkersPage from '@/components/admin/WorkersPage.vue'
+import CoffeeshopsPage from '@/components/admin/coffeeshops/CoffeeshopsPage.vue'
+import ProductsPage from '@/components/admin/products/ProductsPage.vue'
+import WorkersPage from '@/components/admin/workers/WorkersPage.vue'
 
 const router = createRouter({
+    scrollBehavior: function(to) {
+        if (to.hash) {
+            return {
+                el: to.hash,
+                top: 120,
+                behavior: 'smooth'
+            }
+        }
+    },
     routes: [{
             path: '/',
             name: 'home',

@@ -6,15 +6,15 @@
     <div class="modal-product-item__right-content">
       <div class="modal-details">
         <span class="modal-details__title">Название: </span>
-        <input type="text" v-model="this.name" class="change">
+        <input required type="text" v-model="this.name" placeholder="Название..." class="change">
       </div>
       <div class="modal-details">
         <span class="modal-details__title">Артикул: </span>
-        <input type="text" v-model="this.article" class="change">
+        <input required type="text" v-model="this.article" placeholder="Артикул(A1)..." class="change">
       </div>
       <div class="modal-details">
         <span class="modal-details__title">Тип: </span>
-        <select v-model="this.type" class="change select">
+        <select v-model="this.type" placeholder="Тип..." class="change select">
           <option>Кофе</option>
           <option>Чай</option>
           <option>Сладкое</option>
@@ -23,12 +23,12 @@
       </div>
       <div class="modal-details modal-details__price">
         <span class="modal-details__title">Цена: </span>
-        <input type="number" v-model="this.price" class="change" placeholder="0">
+        <input required type="number" v-model="this.price" class="change" placeholder="Цена...">
       </div>
     </div>
       <div class="modal-details modal-details__text">
         <span class="modal-details__title">Описание: </span>
-        <textarea type="text" v-model="this.title" class="change__title text-title"></textarea>
+        <textarea required type="text" v-model="this.title" placeholder="Описание товара..." class="change__title text-title"></textarea>
       </div>
       <button class="add-btn" @click="addItemToDB" :disabled="!validCheck">Добавить</button>
     </div>  
@@ -123,6 +123,10 @@ export default {
         } else if(["Сладкое", "Сытное"].includes(this.type)){
           this.ADD_FOOD_ITEM_TO_DB(productItem)
         }
+        this.name = "",
+        this.article = "",
+        this.price = 0,
+        this.title = ""
     },
   },
 }
@@ -186,6 +190,7 @@ img{
 }
 .text-title{
   height: 75px;
+  font-size: 18px;
 }
 .coffee{
   background-color: #FFB21C !important;

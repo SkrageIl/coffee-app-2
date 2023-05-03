@@ -4,7 +4,7 @@
 <div class="admin-page" v-if="this.$route.path == '/admin'">
   <div class="admin-menu">
     <router-link :to="{name:'products'}" class="admin-menu__btn">Каталог</router-link>
-    <router-link :to="{name:'workers'}" class="admin-menu__btn">Работники</router-link>
+    <router-link :to="{name:'workers'}" class="admin-menu__btn">Сотрудники</router-link>
     <router-link :to="{name:'coffeeshops'}" class="admin-menu__btn">Кофеточки</router-link>
     <button @click="this.logout" class="admin-menu__btn exit">Выйти</button>
   </div>
@@ -40,7 +40,7 @@ export default {
       },
       {
         href: '/admin/workers',
-        title: 'Работники',
+        title: 'Сотрудники',
         icon: {
           element: 'span',
           class: 'material-icons',

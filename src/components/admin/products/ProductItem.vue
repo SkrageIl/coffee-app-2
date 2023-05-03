@@ -9,32 +9,42 @@
         <span v-if="!isChange" class="details__props">{{product_data.name}}</span>
         <input type="text" v-if="isChange" v-model="this.name" class="change">
       </div>
-      <div class="details">
+      <div class="details article">
         <span class="details-bold">Артикул: </span>
         <span v-if="!isChange" class="details__props">{{product_data.article}}</span>
         <input type="text" v-if="isChange" v-model="this.article" class="change">
       </div>
-      <div class="details__bot" v-if="this.$isMobile()">
+      <div class="details" v-if="this.width > 1024">
+        <span class="details-bold">Тип: </span>
+        <span v-if="!isChange" class="details__props">{{product_data.type}}</span>
+        <select v-model="this.type" v-if="isChange" placeholder="Тип..." class="change select">
+          <option>Кофе</option>
+          <option>Чай</option>
+          <option>Сладкое</option>
+          <option>Сытное</option>
+        </select>
+      </div>
+      <div class="details details__price" v-if="this.width > 1024">
+        <span class="details-bold">Цена: </span>
+        <span v-if="!isChange" class="details__props">{{product_data.price}} &#8381;</span>
+        <input type="text" v-if="isChange" v-model="this.price" class="change">
+      </div>
+      <div class="details__bot" v-else>
         <div class="details">
           <span class="details-bold">Тип: </span>
           <span v-if="!isChange" class="details__props">{{product_data.type}}</span>
-          <input type="text" v-if="isChange" v-model="this.type" class="change">
+          <select v-model="this.type" v-if="isChange" placeholder="Тип..." class="change select">
+            <option>Кофе</option>
+            <option>Чай</option>
+            <option>Сладкое</option>
+            <option>Сытное</option>
+          </select>
         </div>
         <div class="details details__price">
           <span class="details-bold">Цена: </span>
           <span v-if="!isChange" class="details__props">{{product_data.price}} &#8381;</span>
-          <input type="text" v-if="isChange" v-model="this.price" class="change">
+          <input type="number" v-if="isChange" v-model="this.price" class="change">
         </div>
-      </div>
-      <div class="details" v-if="!this.$isMobile()">
-        <span class="details-bold">Тип: </span>
-        <span v-if="!isChange" class="details__props">{{product_data.type}}</span>
-        <input type="text" v-if="isChange" v-model="this.type" class="change">
-      </div>
-      <div class="details details__price" v-if="!this.$isMobile()">
-        <span class="details-bold">Цена: </span>
-        <span v-if="!isChange" class="details__props">{{product_data.price}} &#8381;</span>
-        <input type="text" v-if="isChange" v-model="this.price" class="change">
       </div>
     </div>
       <div class="details details__title">
@@ -44,7 +54,7 @@
       </div>
       <div class="buttons">
         <button class="delete-btn" @click="deleteItem">Удалить</button>
-        <button class="change-btn" @click="changeItems()">Изменить</button>
+        <button class="change-btn" @click="changeItems">Изменить</button>
       </div>
   </div>
 </template>
@@ -56,11 +66,18 @@ import { mapActions } from 'vuex'
 export default {
   name: "ProductItem",
   directives: {
-      clickOutside: vClickOutside.directive
+    clickOutside: vClickOutside.directive
     },
-  created() {},
+  mounted() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  unmounted() {
+    window.removeEventListener('resize', this.handleResize);
+  },
   data() {
     return {
+      width: 0,
       classes: {
         tea: this.product_data.type == 'Чай',
         coffee: this.product_data.type == 'Кофе',
@@ -90,6 +107,9 @@ export default {
       'CHANGE_FOOD_ITEM_TO_DB',
       'CHANGE_DRINK_ITEM_TO_DB'
     ]),
+    handleResize() {
+      this.width = window.innerWidth
+    },
     deleteItem(){
       if(["Кофе", "Чай"].includes(this.product_data.type)){
         this.DELETE_DRINK_ITEM_FROM_DB(this.product_data.id)
@@ -119,13 +139,13 @@ export default {
       } else this.isChange = true
     },
     onClickOutside () {
-        this.isChange = false
-        this.name = this.product_data.name,
-        this.article = this.product_data.article,
-        this.type = this.product_data.type,
-        this.price = this.product_data.price,
-        this.title = this.product_data.title
-      }
+      this.isChange = false
+      this.name = this.product_data.name,
+      this.article = this.product_data.article,
+      this.type = this.product_data.type,
+      this.price = this.product_data.price,
+      this.title = this.product_data.title
+    }
 },
 }
 </script>
@@ -212,7 +232,8 @@ img{
     grid-column: span 2;
   }
   &__price{
-    margin-left: 45px;
+    margin-left: 0;
+    margin-right: 8px;
   }
   &__bot{
     display: flex;
@@ -223,7 +244,7 @@ img{
 }
 .change{
   width: 90%;
-  font-size: 15px;
+  font-size: 18px;
   padding: 3px;
   margin-top: 5px;
   &__title{
@@ -241,8 +262,15 @@ img{
   padding: 0 10px;
   height: 40px;
 }
+.select{
+  padding: 1.25px;
+  width: 100px;
+}
 
 @media(min-width: 1024px){
+  .article{
+    margin-right: 9px;
+  }
   .product-item{
     &__right-content{
       grid-template-columns: 1fr 1fr;
@@ -256,6 +284,33 @@ img{
   .details{
     &__price{
       margin-left: 15px;
+    }
+  }
+  .select{
+    width: auto;
+    margin-right: 5%;
+  }
+}
+@media(max-width: 576px){
+  .details{
+    &__price{
+      margin-left: 15px;
+    }
+    &__props{
+      padding: 5px;
+      padding-left: 0;
+      padding-right: 0;
+      display: flex;
+    }
+  }
+}
+@media(min-width: 576px) and (max-width: 760px){
+  .details{
+    &__props{
+      padding: 5px;
+      padding-left: 0;
+      padding-right: 0;
+      display: flex;
     }
   }
 }
