@@ -47,21 +47,63 @@
         </div>
       </div>
     </div>
-      <div class="details details__title">
-        <span class="details-bold">Описание: </span>
-        <span v-if="!isChange" class="details__props">{{product_data.title}}</span>
-        <textarea type="text" v-if="isChange" v-model="this.title" class="change__title"></textarea>
+    <div class="details coffeeshops-selection" v-click-outside="onClickOutsideShops">
+      <span class="details-bold">Кофейни: </span>
+      <div class="coffeeshops-selection__selected" v-if="!isChange">
+        <div class="coffeeshops-selection__list-input">
+          <span class="coffeeshops-selection__input-list-item" v-for="shop in this.shops" :key="shop.id">
+            {{shop}}
+          </span>
+        </div>
       </div>
-      <div class="buttons">
-        <button class="delete-btn" @click="deleteItem">Удалить</button>
-        <button class="change-btn" @click="changeItems">Изменить</button>
+      <div class="coffeeshops-selection__selected__change" v-if="isChange" @click="openShopsList()">
+        <div class="coffeeshops-selection__list-input">
+          <span class="coffeeshops-selection__input-list-item" v-for="shop in this.shops" :key="shop.id">
+            {{shop}}
+          </span>
+        </div>
       </div>
+      <div class="coffeeshops-selection__list" v-if="this.isShopsList">
+        <input class="btn-select-all" type="checkbox" @click="selectAll()" v-model="checkSelectAll" id="selectAll">
+        <label for="selectAll">Все</label>
+        <div class="coffeeshops-selection__item" v-for="shop in SHOPS" :key="shop.id">
+          <input v-model="this.shops" 
+          type="checkbox" 
+          :name="shop.address" :id="shop.address" :value="shop.address">
+          <label :for="shop.address">{{shop.address}}</label>
+        </div>
+      </div>
+    </div>
+    <div class="details details__title">
+      <span class="details-bold">Описание: </span>
+      <span v-if="!isChange" class="details__props">{{product_data.title}}</span>
+      <textarea type="text" v-if="isChange" v-model="this.title" class="change__title"></textarea>
+    </div>
+    <div class="buttons">
+      <button class="delete-btn" @click="this.isDialog = true">Удалить</button>
+      <button class="change-btn" @click="changeItems">Изменить</button>
+    </div>
+    <vue-final-modal
+      v-model="isDialog"
+      @click-outside="closeModal"
+      :drag="false"
+      classes="modal-container"
+      content-class="modal-content dialog-container">
+        <div class="dialog">
+          <button @click="closeModal" class="dialog__close-popup-btn">X</button>
+          <p>Вы уверены, что хотите удалить <strong>{{product_data.name}}({{ product_data.article }})</strong> из списка?</p>
+          <div class="dialog__buttons">
+            <button class="agree" @click="deleteItem">Да</button>
+            <button class="cancel" @click="closeModal">Отмена</button>
+          </div>
+        </div>
+    </vue-final-modal>
   </div>
 </template>
 
 <script>
 import vClickOutside from 'click-outside-vue3'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: "ProductItem",
@@ -69,6 +111,7 @@ export default {
     clickOutside: vClickOutside.directive
     },
   mounted() {
+    this.GET_SHOPS_FROM_DB()
     window.addEventListener('resize', this.handleResize);
     this.handleResize();
   },
@@ -85,11 +128,14 @@ export default {
         meal: this.product_data.type == 'Сытное'
       },
       isChange: false,
+      isShopsList: false,
+      isDialog: false,
       name: this.product_data.name,
       article: this.product_data.article,
       type: this.product_data.type,
       price: this.product_data.price,
-      title: this.product_data.title
+      title: this.product_data.title,
+      shops: this.product_data.coffeeshops
     }
   },
   props: {
@@ -100,13 +146,37 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'SHOPS'
+    ]),
+    checkSelectAll(){
+      if (this.shops.length == this.SHOPS.length) {
+        return true
+      } else return false
+    },
+  },
   methods: {
     ...mapActions([
       'DELETE_FOOD_ITEM_FROM_DB',
       'DELETE_DRINK_ITEM_FROM_DB',
       'CHANGE_FOOD_ITEM_TO_DB',
-      'CHANGE_DRINK_ITEM_TO_DB'
+      'CHANGE_DRINK_ITEM_TO_DB',
+      'GET_SHOPS_FROM_DB'
     ]),
+    closeModal(){
+      this.isDialog = false
+    },
+    selectAll(){
+      if(this.shops.length == this.SHOPS.length){
+        this.shops = []
+      } else this.shops = this.SHOPS.map(shop => shop.address)
+    },
+    openShopsList(){
+      if (this.isShopsList) {
+        this.isShopsList = false
+      } else this.isShopsList = true
+    },
     handleResize() {
       this.width = window.innerWidth
     },
@@ -116,10 +186,12 @@ export default {
       } else if(["Сладкое", "Сытное"].includes(this.product_data.type)){
         this.DELETE_FOOD_ITEM_FROM_DB(this.product_data.id)
       }
+      this.isDialog = false
     },
     changeItems(){
       if (this.isChange) {
         this.isChange = false
+        this.isShopsList = false
         let productItem = {
           id: this.product_data.id,
           name: this.name,
@@ -128,7 +200,8 @@ export default {
           price: this.price,
           quantity: this.product_data.quantity,
           type: this.type,
-          title: this.title
+          title: this.title,
+          coffeeshops: this.shops
         }
         if (["Кофе", "Чай"].includes(this.type) && JSON.stringify(productItem) !== JSON.stringify(this.product_data))
         {
@@ -140,11 +213,16 @@ export default {
     },
     onClickOutside () {
       this.isChange = false
+      this.isShopsList = false
       this.name = this.product_data.name,
       this.article = this.product_data.article,
       this.type = this.product_data.type,
       this.price = this.product_data.price,
-      this.title = this.product_data.title
+      this.title = this.product_data.title,
+      this.shops = this.product_data.coffeeshops
+    },
+    onClickOutsideShops(){
+      this.isShopsList = false
     }
 },
 }
@@ -169,6 +247,100 @@ export default {
 }
 img{
   width: 100px;
+}
+.dialog{
+  background-color: white;
+  padding: 1% 6% 3%;
+  border-radius: 10px;
+  width: 50%;
+  font-size: 20px;
+  &__close-popup-btn{
+    position: absolute;
+    top: 5px;
+    right: 20%;
+    font-size: 15px;
+    padding: 5px 7px;
+    color: #ffffff;
+    background-color: #cccccc;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+  }
+  p{
+    font-weight: 700;
+    strong{
+      background-color: #ffa34c;
+      padding: 0 5px;
+    }
+  }
+  &__buttons{
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    button{
+      width: 100px;
+      font-size: 20px;
+      margin: 0 5px;
+      border-radius: 5px;
+      border: none;
+      padding: 5px;
+      font-weight: 800;
+      color: white;
+      cursor: pointer;
+    }
+    .cancel{
+      background-color: #888888;
+    }
+    .agree{
+      background-color: #fa1616;
+    }
+  }
+}
+.coffeeshops-selection{
+  text-align: left;
+  grid-column: span 2;
+  &__selected{
+    background-color: white;
+    width: 90%;
+    margin: 5px 0;
+    border: 1px;
+    font-size: 18px;
+    padding: 5px;
+    &__change{
+      border-radius: 2px;
+      border-color: #767676;
+      border-width: 1px;
+      border-style: inset;
+      border-image: initial;
+      height: fit-content;
+    }
+  }
+  &__btn{
+    color: #828482;
+  }
+  &__input-list-item{
+    margin-bottom: 5px;
+  }
+  &__list-input{
+    display: grid;
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+  &__list{
+    text-align: left;
+    width: fit-content;
+    margin: 0 10% 0 0;
+    position: absolute;
+    margin-top: 60px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 0 0 10px 10px;
+    -webkit-box-shadow: 0px 10px 10px 2px rgba(34, 60, 80, 0.2);
+    -moz-box-shadow: 0px 10px 10px 2px rgba(34, 60, 80, 0.2);
+    box-shadow: 0px 10px 10px 2px rgba(34, 60, 80, 0.2);
+    input{
+    }
+  }
 }
 .product-item{
   display: grid;

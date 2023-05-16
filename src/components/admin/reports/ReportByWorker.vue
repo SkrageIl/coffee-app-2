@@ -1,0 +1,605 @@
+<template>
+  <div class="rbc">
+    <div class="rbc__top-content">
+      <div class="rbc__top-content__calendar">
+        <p>Период</p>
+        <v-date-picker v-model="range" is-range>
+          <template v-slot="{ togglePopover }">
+            <div class="calendar__content">
+              <button
+                class="calendar__btn"
+                @click="togglePopover()"
+              >
+                <span class="material-icons calendar__icon">
+                  calendar_month
+                </span>
+              </button>
+              <div class="calendar__inputs">
+                <input
+                  :value="formatDate(this.range.start)"
+                  class="calendar__input"
+                  @click="togglePopover()"
+                />
+                <span class="material-icons calendar__arrow">arrow_forward</span>
+                <input
+                  :value="formatDate(this.range.end)"
+                  class="calendar__input"
+                  @click="togglePopover()"
+                />
+              </div>
+              <span class="calendar__close-btn">
+                <button @click="deleteDate()" class="material-icons">close</button>
+              </span>
+            </div>
+          </template>
+        </v-date-picker>
+      </div>
+      <div class="rbc__top-content__workers">
+        <p>Сотрудник</p>
+        <AccordionList class="workers-accord">
+          <AccordionItem class="workers-selection__input">
+            <template #summary>
+              <span class="workers-selection__selected">
+                <span class="workers-selection__btn" v-if="this.workers.length == 0">Выберите сотрудника</span>
+                <span class="workers-selection__input-list-item" v-for="worker in this.workers" :key="worker.id">
+                  {{worker}}
+                </span>
+              </span>
+            </template>
+            <div class="workers-selection__list">
+              <input class="btn-select-all" type="checkbox" @click="selectAll()" v-model="checkSelectAll" id="selectAll">
+              <label for="selectAll">Все</label>
+              <div class="workers-selection__item" v-for="worker in WORKERS" :key="worker.id">
+                <input v-model="this.workers" 
+                type="checkbox" 
+                :name="worker.name" :id="worker.name" :value="worker.tel">
+                <label :for="worker.name">{{worker.name}} ({{ worker.tel }})</label>
+              </div>
+            </div>
+          </AccordionItem>
+        </AccordionList>
+      </div>
+    </div>
+    <div class="rbc__center-content">
+      <div class="rbc__quantityAll">
+        <p>Выполнено заказов: {{summaryAll.quantity}}</p>
+      </div>
+      <div class="rbc__sumAll">
+        <p>Выручка: {{summaryAll.summ}}&#8381;</p>
+      </div>
+    </div>
+    <div class="rbc__bot-content">
+      <AccordionList>
+        <AccordionItem v-for="ordersByWorkers in completedOrdersByWorkers" :key="ordersByWorkers.id" class="accord-order__days">
+          <template #summary>
+            <span class="accord-order__days-title">
+              {{ ordersByWorkers.worker.tel }}
+              ({{ ordersByWorkers.worker.name }})
+            </span>
+            <span class="details-orders">
+              <p>Заказов:</p>
+              <span class="details-orders__quan">
+                {{ ordersByWorkers.quantity }}
+              </span>
+            </span>
+            <span class="details-orders">
+              <p>Выручка:</p>
+              <span class="accord-order__days-earning">
+                {{ ordersByWorkers.sum  }}&#8381;
+              </span>
+            </span>
+          </template>
+          <AccordionList open-multiple-items>
+            <AccordionItem v-for="ordersMonthDetails in this.completedOrdersByWorkersMonthDetails(ordersByWorkers)" :key="ordersMonthDetails.id" class="accord-order__item">
+              <template #summary>
+                <span class="accord-order__days-title">
+                  {{ ordersMonthDetails.date }}
+                </span>
+                <span class="details-orders">
+                  <p>Заказов:</p>
+                  <span class="details-orders__quan">
+                    {{ ordersMonthDetails.quantity }}
+                  </span>
+                </span>
+                <span class="details-orders">
+                  <p>Выручка:</p>
+                  <span class="accord-order__days-earning">
+                    {{ ordersMonthDetails.sum  }}&#8381;
+                  </span>
+                </span>
+              </template>
+              <AccordionList open-multiple-items>
+                <AccordionItem v-for="ordersDaysDetails in this.completedOrdersByWorkersDaysDetails(ordersByWorkers)" :key="ordersDaysDetails.id" class="accord-order__item">
+                  <template #summary>
+                    <span class="accord-order__days-title">
+                      {{ ordersDaysDetails.date }}
+                    </span>
+                    <span class="details-orders">
+                      <p>Заказов:</p>
+                      <span class="details-orders__quan">
+                        {{ ordersDaysDetails.quantity }}
+                      </span>
+                    </span>
+                    <span class="details-orders">
+                      <p>Выручка:</p>
+                      <span class="accord-order__days-earning">
+                        {{ ordersDaysDetails.sum  }}&#8381;
+                      </span>
+                    </span>
+                  </template>
+                  <AccordionList open-multiple-items>
+                    <AccordionItem v-for="ordersDetails in this.completedOrdersByWorkersDetails({worker: ordersByWorkers.worker, date: ordersDaysDetails.date})" :key="ordersDetails.id" class="accord-order__item">
+                      <template #summary>
+                        <span class="accord-order__title">
+                          {{ ordersDetails.client.name }}
+                          ({{ ordersDetails.client.tel }})
+                          {{ this.formatTime(ordersDetails.time) }}
+                          <span class="accord-order__days-earning">
+                            {{ ordersDetails.total }}&#8381;
+                          </span>
+                        </span>
+                      </template>
+                      <OrderItem :order_data="ordersDetails" class="accord-order__details-item"/>
+                    </AccordionItem>
+                  </AccordionList>
+                </AccordionItem>
+              </AccordionList>
+            </AccordionItem>
+          </AccordionList>
+        </AccordionItem>
+      </AccordionList>
+    </div>
+  </div>
+</template>
+
+<script>
+import {mapGetters, mapActions} from 'vuex'
+import moment from 'moment'
+import { AccordionList, AccordionItem } from 'vue3-rich-accordion'
+import OrderItem from '@/components/barista/orders/OrderItem.vue'
+
+export default {
+  name: "ReportByWorker",
+  components:{
+    AccordionList,
+    AccordionItem,
+    OrderItem
+  },
+  mounted() {
+    this.GET_WORKERS_FROM_DB()
+    this.GET_ORDERS_FROM_DB()
+  },
+  data() {
+    return {
+      range: {
+        start: null,
+        end: null
+      },
+      workers: []
+    };
+  },
+  props: {},
+  computed: {
+    ...mapGetters([
+      'WORKERS',
+      'COMPLETED_ORDERS'
+    ]),
+    checkSelectAll(){
+      if (this.workers.length == this.WORKERS.length) {
+        return true
+      } else return false
+    },
+    completedOrdersByWorkers(){
+      let selectedStartTimeFormat = moment(this.range.start).format('DD-MM-YYYY')
+      let selectedEndTimeFormat = moment(this.range.end).format('DD-MM-YYYY')
+      selectedStartTimeFormat = moment(selectedStartTimeFormat, 'DD-MM-YYYY')
+      selectedEndTimeFormat = moment(selectedEndTimeFormat, 'DD-MM-YYYY')
+      let workers = this.workers
+
+      let OrdersByWorkers = this.COMPLETED_ORDERS.reduce((arr, order) => {
+        const timeOrderFormat = moment(order.time, 'DD-MM-YYYY HH:mm').startOf('day')
+        const worker = order.worker
+        if ((timeOrderFormat.isBetween(selectedStartTimeFormat, selectedEndTimeFormat, 'day', '[]')
+          || this.range.start == null || this.range.end == null)
+          && (workers.includes(order.worker.tel) || workers.length == 0)) {
+          const foundItem = arr.find(item => item.worker.tel == worker.tel)
+          if(foundItem) {
+            foundItem.sum += order.total
+            foundItem.quantity++
+          } else {
+            arr.push({ worker, sum: order.total, quantity: 1 })
+          }
+        }
+        return arr
+      }, [])
+      return OrdersByWorkers
+    },
+    summaryAll(){
+      let selectedStartTimeFormat = moment(this.range.start).format('DD-MM-YYYY')
+      let selectedEndTimeFormat = moment(this.range.end).format('DD-MM-YYYY')
+      selectedStartTimeFormat = moment(selectedStartTimeFormat, 'DD-MM-YYYY')
+      selectedEndTimeFormat = moment(selectedEndTimeFormat, 'DD-MM-YYYY')
+      let workers = this.workers
+
+      let summaryAll = this.COMPLETED_ORDERS.reduce((summary, order) => {
+        const timeOrderFormat = moment(order.time, 'DD-MM-YYYY HH:mm').startOf('day')
+        if ((timeOrderFormat.isBetween(selectedStartTimeFormat, selectedEndTimeFormat, 'day', '[]')
+          || this.range.start == null || this.range.end == null)
+          && (workers.includes(order.worker.tel) || workers.length == 0)) {
+            summary.quantity++
+            summary.summ += order.total
+        }
+        return summary
+      }, { quantity: 0, summ: 0})
+      return summaryAll
+    }
+  },
+  methods: {
+    ...mapActions([
+      'GET_WORKERS_FROM_DB',
+      'GET_ORDERS_FROM_DB'
+    ]),
+    formatDate(date){
+      if (date != null) {
+        return moment(date).format('DD-MM-YYYY')
+      } else return ""
+    },
+    deleteDate(){
+      this.range.start = null
+      this.range.end = null
+    },
+    selectAll(){
+      if(this.workers.length == this.WORKERS.length){
+        this.workers = []
+      } else this.workers = this.WORKERS.map(worker => worker.tel)
+    },
+    completedOrdersByWorkersMonthDetails(orders){
+      let selectedStartTimeFormat = moment(this.range.start).format('DD-MM-YYYY')
+      let selectedEndTimeFormat = moment(this.range.end).format('DD-MM-YYYY')
+      selectedStartTimeFormat = moment(selectedStartTimeFormat, 'DD-MM-YYYY')
+      selectedEndTimeFormat = moment(selectedEndTimeFormat, 'DD-MM-YYYY')
+      let worker = orders.worker
+
+      let OrdersByWorkers = this.COMPLETED_ORDERS.reduce((arr, order) => {
+        const timeOrderFormat = moment(order.time, 'DD-MM-YYYY HH:mm').startOf('day')
+        if ((timeOrderFormat.isBetween(selectedStartTimeFormat, selectedEndTimeFormat, 'day', '[]')
+          || this.range.start == null || this.range.end == null)
+          && (order.worker.tel == worker.tel)) {
+          moment.locale('ru');
+          const date = timeOrderFormat.format('YYYY MM (MMMM)')
+          const foundItem = arr.find(item => item.date === date)
+          if(foundItem) {
+            foundItem.sum += order.total
+            foundItem.quantity++
+          } else {
+            arr.push({ date, sum: order.total, quantity: 1 })
+          }
+        }
+        return arr
+      }, [])
+      return OrdersByWorkers.sort((a,b) => a.date < b.date ? 1 : -1)
+    },
+    completedOrdersByWorkersDaysDetails(orders){
+      let selectedStartTimeFormat = moment(this.range.start).format('DD-MM-YYYY')
+      let selectedEndTimeFormat = moment(this.range.end).format('DD-MM-YYYY')
+      selectedStartTimeFormat = moment(selectedStartTimeFormat, 'DD-MM-YYYY')
+      selectedEndTimeFormat = moment(selectedEndTimeFormat, 'DD-MM-YYYY')
+      let worker = orders.worker
+
+      let OrdersByWorkers = this.COMPLETED_ORDERS.reduce((arr, order) => {
+        const timeOrderFormat = moment(order.time, 'DD-MM-YYYY HH:mm').startOf('day')
+        if ((timeOrderFormat.isBetween(selectedStartTimeFormat, selectedEndTimeFormat, 'day', '[]')
+          || this.range.start == null || this.range.end == null)
+          && (order.worker.tel == worker.tel)) {
+          const date = timeOrderFormat.format('DD-MM-YYYY')
+          const foundItem = arr.find(item => item.date === date)
+          if(foundItem) {
+            foundItem.sum += order.total
+            foundItem.quantity++
+          } else {
+            arr.push({ date, sum: order.total, quantity: 1 })
+          }
+        }
+        return arr
+      }, [])
+      return OrdersByWorkers.sort((a,b) => a.date < b.date ? 1 : -1)
+    },
+    completedOrdersByWorkersDetails(details){
+      let date = moment(details.date, 'DD-MM-YYYY').format('DD-MM-YYYY')
+      let worker = details.worker
+
+      return this.COMPLETED_ORDERS.filter(function(order) {
+        let timeOrderFormat = moment(order.time, 'DD-MM-YYYY HH:mm').format('DD-MM-YYYY')
+        return timeOrderFormat == date && order.worker.tel == worker.tel
+      }).sort((a,b) => a.time < b.time ? 1 : -1)
+    },
+    formatTime(time){
+      return moment(time, 'DD-MM-YYYY HH:mm').format('HH:mm')
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.btn-select-all{
+  font-size: 1em;
+  width: 1em;
+  height: 1em;
+}
+.workers-accord{
+  margin-top: 32px;
+}
+.workers-selection{
+  &__btn{
+    grid-column: span 2
+  }
+  &__selected{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  &__list{
+    text-align: left;
+    margin: 20px;
+  }
+  &__item{
+    margin: 10px;
+    display: flex;
+    input{
+      font-size: 1em;
+      width: 1em;
+      height: 1em;
+    }
+    label{
+      margin-left: 5px;
+    }
+  }
+  &__input{
+    cursor: pointer;
+    display: flex;
+    margin: 0 5%;
+    flex-wrap: wrap;
+    width: fit-content;
+    padding: 16px 10px;
+    border-radius: 10px;
+    font-size: 20px;
+    -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
+    -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
+    box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
+  }
+  &__input-list-item{
+    margin: 5px 5px;
+    background-color: #ff900070;
+    color: #3a3939;
+    font-weight: 600;
+    font-size: 18px;
+    border-radius: 5px;
+    padding: 5px;
+  }
+}
+.details-orders{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  font-weight: 600;
+  font-size: 22px;
+  &__quan{
+    margin-left: 10px;
+  }
+  p{
+    font-size: 20px;
+  }
+}
+p{
+  font-size: 25px;
+  font-weight: 600;
+  text-align: left;
+  margin: 20px 5%;
+}
+.calendar{
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  margin: 20px;
+  margin-bottom: 40px;
+  &__close-btn{
+    display: flex;
+    align-items: center;
+    button{
+      padding: 10px;
+      border: none;
+      border-radius: 50%;
+      background-color: white;
+      -webkit-box-shadow: 0px 0px 10px -2px rgba(34, 60, 80, 0.2) inset;
+      -moz-box-shadow: 0px 0px 10px -2px rgba(34, 60, 80, 0.2) inset;
+      box-shadow: 0px 0px 10px -2px rgba(34, 60, 80, 0.2) inset;
+    }
+  }
+  &__content{
+    display: flex;
+    justify-content: flex-start;
+    justify-items: center;
+    margin: 0 5%;
+  }
+  &__inputs{
+    display: flex;
+  }
+  &__input{
+    width: 150px;
+    padding: 10px;
+    margin: 10px;
+    font-size: 25px;
+    border: none;
+    border-radius: 10px;
+    text-align: center;
+    -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
+    -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
+    box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
+  }
+  &__btn{
+    font-size: 50px;
+    border: 0;
+    padding: 5px;
+    margin-right: 10px;
+    background-color: transparent;
+  }
+  &__arrow{
+    display: grid;
+    align-items: center;
+  }
+  &__icon{
+    font-size: 50px;
+    color: #3a3939;
+    padding: 6px 10px 10px;
+    border-radius: 22px;
+    -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+    -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+    box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+  }
+}
+.rbc{
+  &__top-content{
+    select{
+      font-size: 1.5em;
+      padding: 5px;
+      text-align: left;
+      display: flex;
+      margin: 30px 5%;
+      height: 60px;
+    }
+  }
+  &__center-content{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: center;
+  }
+  &__sumAll{
+    white-space: nowrap;
+  }
+  &__quantityAll{
+    white-space: nowrap;
+  }
+}
+.accord-order{
+  &__days{
+    margin: 30px 10%;
+    padding: 20px;
+    text-align: left;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+    -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+    box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+  }
+  &__days-title{
+    font-weight: 600;
+    font-size: 22px;
+  }
+  &__days-earning{
+    font-weight: 700;
+    font-size: 22px;
+    color: #228B22;
+    padding: 10px;
+    width: fit-content;
+    text-align: end;
+  }
+  &__item{
+    margin: 20px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  &__details-item{
+    font-size: 15px;
+  }
+}
+.earning-selected{
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 20px;
+  background-color: #10f9333b;
+  padding: 20px 12%;
+}
+
+@media(max-width: 576px){
+  .calendar{
+    &__inputs{
+      display: flex;
+      align-items: center;
+    }
+    &__content{
+      margin-right: 1em;
+    }
+    &__input{
+      width: 90px;
+    height: fit-content;
+    padding: 5px;
+    margin: 0;
+    font-size: 1em;
+    }
+    &__icon{
+      font-size: 30px;
+      padding: 4px 5px 5px;
+    }
+    &__btn{
+      font-size: 50px;
+      width: fit-content;
+      display: flex;
+      margin-right: 0;
+    }
+  }
+  .accord-order{
+    &__days-title{
+      font-size: 10px;
+    }
+    &__days-earning{
+      font-size: 1em;
+      padding: 10px 10px 10px 5px;
+    }
+    &__item{
+      font-size: 1em;
+    }
+    &__days{
+      padding: 10px;
+    }
+  }
+  .earning-selected{
+    font-size: 1em;
+  }
+  .rbc{
+    &__top-content{
+      select{
+        font-size: 1em;
+        margin: 0 5% 20px 5%;
+      }
+      p{
+        margin-bottom: 10px;
+      }
+    }
+    &__center-content{
+      grid-template-columns: 1fr;
+      justify-items: baseline;
+      p{
+        margin: 5px 20px;
+        font-size: 15px
+      }
+    }
+  }
+  p{
+    font-size: 100%;
+  }
+  .details-orders{
+    font-size: 12px;
+    p{
+      font-size: 10px;
+    }
+  }
+}
+@media(min-width: 1024px){
+  .rbc{
+    &__top-content{
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 20px;
+    }
+  }
+}
+</style>

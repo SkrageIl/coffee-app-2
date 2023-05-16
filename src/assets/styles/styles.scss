@@ -49,3 +49,16 @@
 .v-sidebar-menu .vsm--mobile-bg {
     background-color: #ff9000 !important;
 }
+
+.dialog-container {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    top: 40%;
+    margin: 0 30%;
+}
+
+.dialog-modal {
+    display: flex;
+    justify-content: center;
+}

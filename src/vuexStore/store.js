@@ -14,7 +14,8 @@ let store = createStore({
         baristaCompletedOrders: [],
         drinks: [],
         foods: [],
-        workers: []
+        workers: [],
+        completedOrders: []
     },
     mutations: {
         auth_request(state) {
@@ -64,6 +65,9 @@ let store = createStore({
         SET_SHOPS_TO_STATE: (state, shops) => {
             state.shops = shops
         },
+        SET_COMPLETED_ORDERS_TO_STATE: (state, orders) => {
+            state.completedOrders = orders
+        }
     },
     actions: {
         login({ commit }, user) {
@@ -202,7 +206,8 @@ let store = createStore({
                             "price": product.price,
                             "quantity": product.quantity,
                             "type": product.type,
-                            "title": product.title
+                            "title": product.title,
+                            "coffeeshops": product.coffeeshops
                         },
                         method: 'PATCH'
                     })
@@ -227,7 +232,8 @@ let store = createStore({
                             "price": product.price,
                             "quantity": 0,
                             "type": product.type,
-                            "title": product.title
+                            "title": product.title,
+                            "coffeeshops": product.coffeeshops
                         },
                         method: 'PATCH'
                     })
@@ -252,7 +258,8 @@ let store = createStore({
                             "price": product.price,
                             "quantity": 0,
                             "type": product.type,
-                            "title": product.title
+                            "title": product.title,
+                            "coffeeshops": product.coffeeshops
                         },
                         method: 'POST'
                     })
@@ -277,7 +284,8 @@ let store = createStore({
                             "price": product.price,
                             "quantity": 0,
                             "type": product.type,
-                            "title": product.title
+                            "title": product.title,
+                            "coffeeshops": product.coffeeshops
                         },
                         method: 'POST'
                     })
@@ -449,10 +457,28 @@ let store = createStore({
                     })
             })
         },
+        GET_ORDERS_FROM_DB({ commit }) {
+            return axios('http://localhost:3000/orders', {
+                    method: "GET"
+                })
+                .then((orders) => {
+                    var completedOrders = []
+                    orders.data.forEach(function(order) {
+                        if (order.status == "Завершен") {
+                            completedOrders.push(order)
+                        }
+                    })
+                    commit('SET_COMPLETED_ORDERS_TO_STATE', completedOrders)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
     },
     getters: {
         BARISTA_CURRENT_ORDERS: state => state.baristaCurrentOrders,
         BARISTA_COMPLETED_ORDERS: state => state.baristaCompletedOrders,
+        COMPLETED_ORDERS: state => state.completedOrders,
         USER: state => state.user,
         DRINKS: state => state.drinks,
         FOODS: state => state.foods,
@@ -460,6 +486,7 @@ let store = createStore({
         SHOPS: state => state.shops,
         isLoggedIn: state => !!state.token,
         authStatus: state => state.status,
+        ROLE: state => state.user.role,
         isBarista: state => {
             if (state.user.role == "barista") {
                 return true

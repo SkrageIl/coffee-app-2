@@ -27,9 +27,24 @@
       </div>
     </div>
     <div class="buttons">
-      <button class="delete-btn btn" @click="deleteItem">Удалить</button>
+      <button class="delete-btn btn" @click="this.isDialog = true">Удалить</button>
       <button class="change-btn btn" @click="changeItems()">Изменить</button>
     </div>
+    <vue-final-modal
+      v-model="isDialog"
+      @click-outside="closeModal"
+      :drag="false"
+      classes="modal-container"
+      content-class="modal-content dialog-container">
+        <div class="dialog">
+          <button @click="closeModal" class="dialog__close-popup-btn">X</button>
+          <p>Вы уверены, что хотите удалить сотрудника <strong><span>{{worker_data.name}}</span><span>({{ worker_data.tel }})</span></strong> из списка?</p>
+          <div class="dialog__buttons">
+            <button class="agree" @click="deleteItem">Да</button>
+            <button class="cancel" @click="closeModal">Отмена</button>
+          </div>
+        </div>
+    </vue-final-modal>
   </div>
 </template>
 
@@ -46,6 +61,7 @@ export default {
   data() {
     return {
       isChange: false,
+      isDialog: false,
       name: this.worker_data.name,
       tel: this.worker_data.tel,
       depart: this.worker_data.depart
@@ -69,8 +85,12 @@ export default {
       'DELETE_WORKER_ITEM_FROM_DB',
       'CHANGE_WORKER_ITEM_TO_DB'
     ]),
+    closeModal(){
+      this.isDialog = false
+    },
     deleteItem(){
       this.DELETE_WORKER_ITEM_FROM_DB(this.worker_data.id)
+      this.isDialog = false
     },
     changeItems(){
       if (this.isChange) {
@@ -102,6 +122,54 @@ export default {
 img{
   width: 100px;
   margin-top: 10px;
+}
+.dialog{
+  background-color: white;
+  padding: 1% 6% 3%;
+  border-radius: 10px;
+  width: 100%;
+  font-size: 20px;
+  &__close-popup-btn{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 15px;
+    padding: 5px 7px;
+    color: #ffffff;
+    background-color: #cccccc;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+  }
+  p{
+    font-weight: 700;
+    strong{
+      background-color: #ffa34c;
+      padding: 0 5px;
+    }
+  }
+  &__buttons{
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    button{
+      width: 100px;
+      font-size: 20px;
+      margin: 0 5px;
+      border-radius: 5px;
+      border: none;
+      padding: 5px;
+      font-weight: 800;
+      color: white;
+      cursor: pointer;
+    }
+    .cancel{
+      background-color: #888888;
+    }
+    .agree{
+      background-color: #fa1616;
+    }
+  }
 }
 .worker-item{
   margin: 20px;

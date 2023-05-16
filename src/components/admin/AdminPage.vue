@@ -6,6 +6,7 @@
     <router-link :to="{name:'products'}" class="admin-menu__btn">Каталог</router-link>
     <router-link :to="{name:'workers'}" class="admin-menu__btn">Сотрудники</router-link>
     <router-link :to="{name:'coffeeshops'}" class="admin-menu__btn">Кофеточки</router-link>
+    <router-link :to="{name:'byCoffeeshops'}" class="admin-menu__btn">Отчёты</router-link>
     <button @click="this.logout" class="admin-menu__btn exit">Выйти</button>
   </div>
 </div>
@@ -55,6 +56,24 @@ export default {
           class: 'material-icons',
           text: 'store'
         }
+      },
+      {
+        title: 'Отчёты',
+        icon: {
+          element: 'span',
+          class: 'material-icons',
+          text: 'summarize'
+        },
+        child: [
+              {
+                href: '/admin/reports/byCoffeeshops',
+                title: 'По кофеточкам',
+              },
+              {
+                href: '/admin/reports/byWorker',
+                title: 'По сотрудникам',
+              },
+            ],
       }
     ]
     };

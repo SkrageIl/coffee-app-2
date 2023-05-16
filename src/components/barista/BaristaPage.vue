@@ -4,6 +4,7 @@
 <div class="barista-page" v-if="this.$route.path == '/barista'">
   <div class="barista-menu">
     <router-link :to="{name:'orders'}" class="barista-menu__btn">Заказы</router-link>
+    <router-link :to="{name:'productsInCoffeeshops'}" class="barista-menu__btn">Ассортимент</router-link>
     <router-link :to="{name:'earning'}" class="barista-menu__btn">Заработок</router-link>
     <button @click="this.logout" class="barista-menu__btn exit">Выйти</button>
   </div>
@@ -39,6 +40,15 @@ data() {
           element: 'span',
           class: 'material-icons',
           text: 'assignment'
+        }
+      },
+      {
+        href: '/barista/products-in-coffeeshops',
+        title: 'Ассортимент',
+        icon: {
+          element: 'span',
+          class: 'material-icons',
+          text: 'storefront'
         }
       },
       {

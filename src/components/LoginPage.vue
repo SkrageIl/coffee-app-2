@@ -57,7 +57,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'isLoggedIn'
+      'isLoggedIn',
+      'ROLE'
     ])
   },
   methods: {
@@ -69,7 +70,11 @@ export default {
       let password = this.password
       this.login({ tel, password })
       .then(() => {
-        this.$router.push('/')
+        if(this.ROLE == 'barista'){
+          this.$router.push('/barista')
+        } else if(this.ROLE == 'admin'){
+          this.$router.push('/admin')
+        } 
       })
       .catch(err => console.log(err + password))
       setTimeout(() => {

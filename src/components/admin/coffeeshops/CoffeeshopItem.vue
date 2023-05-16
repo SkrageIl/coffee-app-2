@@ -23,9 +23,24 @@
       </div>
     </div>
     <div class="buttons">
-      <button class="delete-btn btn" @click="deleteItem">Удалить</button>
+      <button class="delete-btn btn" @click="this.isDialog = true">Удалить</button>
       <button class="change-btn btn" @click="changeItems">Изменить</button>
     </div>
+    <vue-final-modal
+      v-model="isDialog"
+      @click-outside="closeModal"
+      :drag="false"
+      classes="modal-container dialog-modal"
+      content-class="modal-content dialog-container">
+        <div class="dialog">
+          <button @click="closeModal" class="dialog__close-popup-btn">X</button>
+          <p>Вы уверены, что хотите удалить кофейню <strong>{{shop_data.address}}</strong> из списка?</p>
+          <div class="dialog__buttons">
+            <button class="agree" @click="deleteItem">Да</button>
+            <button class="cancel" @click="closeModal">Отмена</button>
+          </div>
+        </div>
+    </vue-final-modal>
   </div>
 </template>
 
@@ -42,6 +57,7 @@ export default {
   data() {
     return {
       isChange: false,
+      isDialog: false,
       address: this.shop_data.address,
       time: this.shop_data.time,
       phone: this.shop_data.phone
@@ -65,9 +81,12 @@ export default {
       'DELETE_SHOP_ITEM_FROM_DB',
       'CHANGE_SHOP_ITEM_TO_DB'
     ]),
+    closeModal(){
+      this.isDialog = false
+    },
     deleteItem(){
-      console.log(this.shop_data.id)
       this.DELETE_SHOP_ITEM_FROM_DB(this.shop_data.id)
+      this.isDialog = false
     },
     changeItems(){
       if (this.isChange) {
@@ -101,6 +120,56 @@ img{
   margin-top: 10px;
   margin-left: 10px;
   border-radius: 10px;
+}
+.dialog{
+  background-color: white;
+  padding: 1% 6% 3%;
+  border-radius: 10px;
+  width: 100%;
+  font-size: 20px;
+  &__close-popup-btn{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 15px;
+    padding: 5px 7px;
+    color: #ffffff;
+    background-color: #cccccc;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+  }
+  p{
+    font-weight: 700;
+    strong{
+      background-color: #ffa34c;
+      padding: 0 5px;
+      display: flex;
+      justify-content: center;
+    }
+  }
+  &__buttons{
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    button{
+      width: 100px;
+      font-size: 20px;
+      margin: 0 5px;
+      border-radius: 5px;
+      border: none;
+      padding: 5px;
+      font-weight: 800;
+      color: white;
+      cursor: pointer;
+    }
+    .cancel{
+      background-color: #888888;
+    }
+    .agree{
+      background-color: #fa1616;
+    }
+  }
 }
 .shop-item{
   margin: 20px;

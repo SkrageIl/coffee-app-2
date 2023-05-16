@@ -1,5 +1,10 @@
 <template>
   <div class=" modal-shop-item">
+    <div class="shop-top-nav">
+      <button @click="this.isContacts = true" :class="{active: isContacts}">Контакты</button>
+      <button @click="this.isContacts = false" :class="{active: !isContacts}">Товары</button>
+    </div>
+    <div class="contacts-block" v-show="isContacts">
       <div class="modal-shop-item__top-content">
         <img src="@/assets/coffeeshop1.jpg" alt="Фото товара">
         <div class="modal-shop-item__right">
@@ -20,28 +25,90 @@
         </div>
       </div>
     <button class="add-btn" :disabled="v$.$invalid" @click="addItemToDB">Добавить</button>
+    </div>
+    <div class="products-block" v-show="!isContacts">
+      <div class="products-block__nav">
+        <ul>
+          <li @click="this.productTypeForAdd = 'Кофе'" :class="{active: productTypeForAdd == 'Кофе'}">Кофе</li>
+          <li @click="this.productTypeForAdd = 'Чай'" :class="{active: productTypeForAdd == 'Чай'}">Чай</li>
+          <li @click="this.productTypeForAdd = 'Сладкое'" :class="{active: productTypeForAdd == 'Сладкое'}">Сладости</li>
+          <li @click="this.productTypeForAdd = 'Сытное'" :class="{active: productTypeForAdd == 'Сытное'}">Закуски</li>
+        </ul>
+      </div>
+      <button @click="this.isAddingProduct = true">Добавить &#43;</button>
+      <div class="products-block__coffee products-block__list-products" v-show="this.productTypeForAdd == 'Кофе'">
+        <ul>
+          <li v-for="coffee in productByType" :key="coffee.id">
+            {{ coffee.name }}({{ coffee.article }})  {{coffee.price}} &#8381;
+          </li>
+        </ul>
+      </div>
+      <div class="products-block__tea products-block__list-products" v-show="this.productTypeForAdd == 'Чай'">
+        <ul>
+          <li v-for="tea in productByType" :key="tea.id">
+            {{ tea.name }}({{ tea.article }})  {{tea.price}} &#8381;
+          </li>
+        </ul>
+      </div>
+      <div class="products-block__sweet products-block__list-products" v-show="this.productTypeForAdd == 'Сладкое'">
+        <ul>
+          <li v-for="sweet in productByType" :key="sweet.id">
+            {{ sweet.name }}({{ sweet.article }})  {{sweet.price}} &#8381;
+          </li>
+        </ul>
+      </div>
+      <div class="products-block__meal products-block__list-products" v-show="this.productTypeForAdd == 'Сытное'">
+        <ul>
+          <li v-for="meal in productByType" :key="meal.id">
+            {{ meal.name }}({{ meal.article }})  {{meal.price}} &#8381;
+          </li>
+        </ul>
+      </div>
+      <div class="products-block__add-product" v-if="isAddingProduct" v-click-outside="closeAddingProduct">
+        <div class="type-product">
+          <input class="btn-select-all" type="checkbox" @click="this.selectAll()" v-model="checkSelectAll" id="selectAll">
+          <label for="selectAll">Все</label>
+          <div class="type-product__list-item" v-for="product in productsForAdd" :key="product.id">
+            <input v-model="this.products" 
+            type="checkbox" 
+            :name="product.id" :id="product.id" :value="product">
+            <label :for="product.id">{{product.name}}({{ product.article }})  {{product.price}} &#8381;</label>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { useVuelidate } from '@vuelidate/core'
 import { required, minLength } from '@vuelidate/validators'
+import vClickOutside from 'click-outside-vue3'
 
 export default {
   name: "ModalAddCoffeeshop",
+  directives: {
+    clickOutside: vClickOutside.directive
+    },
   setup () {
     return { v$: useVuelidate() }
   },
   mounted() {
+    this.GET_DRINKS_FROM_DB()
+    this.GET_FOODS_FROM_DB()
   },
   data() {
     return {
+      isContacts: true,
+      isAddingProduct: false,
+      productTypeForAdd: 'Кофе',
       img: "",
       address: "",
       time: "",
-      phone: ""
-    };
+      phone: "",
+      products: []
+    }
   },
   validations(){
     return {
@@ -60,23 +127,77 @@ export default {
     }
   },
   props: {},
-  computed:{ 
+  computed:{
+    ...mapGetters([
+      'DRINKS',
+      'FOODS'
+    ]),
+    checkSelectAll(){
+      if (this.productByType.length == this.productsForAdd.length) {
+        return true
+      } else return false
+    },
+    productsForAdd(){
+      var type = this.productTypeForAdd
+      return this.DRINKS.concat(this.FOODS).filter(function(product){
+        return product.type == type
+      })
+    },
+    productByType(){
+      var type = this.productTypeForAdd
+      return this.products.filter(function(product){
+        return product.type == type
+      })
+    }
   },
   methods: {
     ...mapActions([
-      'ADD_SHOP_ITEM_TO_DB'
+      'GET_FOODS_FROM_DB',
+      'GET_DRINKS_FROM_DB',
+      'ADD_SHOP_ITEM_TO_DB',
+      'CHANGE_FOOD_ITEM_TO_DB',
+      'CHANGE_DRINK_ITEM_TO_DB'
     ]),
+    selectAll(){
+      if(this.checkSelectAll){
+        this.deleteAllProducts()
+      } else this.addAllProducts()
+    },
     addItemToDB(){
-      let shopItem = {
+      var shopItem = {
           address: this.address,
           time: this.time,
           phone: this.phone
         }
+        this.products.forEach(product => {
+          product.coffeeshops.push(shopItem.address)
+          if (product.type == "Кофе" || product.type == "Чай") {
+            this.CHANGE_DRINK_ITEM_TO_DB(product)
+          } else if(product.type == "Сладкое" || product.type == "Сытное"){
+            this.CHANGE_FOOD_ITEM_TO_DB(product)
+          }
+        })
         this.ADD_SHOP_ITEM_TO_DB(shopItem)
         this.address = "",
         this.time = "",
         this.phone = ""
     },
+    closeAddingProduct(){
+      this.isAddingProduct = false
+    },
+    addAllProducts(){
+      var type = this.productTypeForAdd
+      this.products = this.products.filter(function(product){
+        return product.type !== type
+      })
+      this.products = this.products.concat(this.productsForAdd)
+    },
+    deleteAllProducts(){
+      var type = this.productTypeForAdd
+      this.products = this.products.filter(function(product){
+        return product.type !== type
+      })
+    }
   },
 };
 </script>
@@ -87,6 +208,84 @@ img{
   margin-top: 10px;
   margin-left: 10px;
   border-radius: 10px;
+}
+.shop-top-nav{
+  position: absolute;
+  top: -43px;
+  left: 0px;
+  button{
+    font-size: 20px;
+    font-weight: 600;
+    padding: 10px;
+    background-color: white;
+    border: none;
+    border-radius: 10px 10px 0 0;
+  }
+  button.active{
+    background-color: #3a3939;
+    color: white;
+  }
+}
+.contacts-block{
+  height: 290px;
+}
+.products-block{
+  height: 290px;
+  &__nav{
+    ul{
+      display: flex;
+      padding: 0;
+      margin: 0 0 10px;
+      li{
+        list-style: none;
+        margin: 5px;
+        padding: 5px;
+        border-radius: 5px;
+        width: 75px;
+        -webkit-box-shadow: 0px 5px 10px -1px rgba(34, 60, 80, 0.2);
+        -moz-box-shadow: 0px 5px 10px -1px rgba(34, 60, 80, 0.2);
+        box-shadow: 0px 5px 10px -1px rgba(34, 60, 80, 0.2);
+      }
+      li.active{
+        background-color: #3a3939;
+        color: white;
+      }
+    }
+  }
+  button{
+    display: flex;
+    background-color: green;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 15px;
+  }
+  &__add-product{
+    .type-product{
+      position: absolute;
+      text-align: left;
+      top: 30%;
+      background-color: white;
+      border-radius: 5px;
+      padding: 10px;
+      -webkit-box-shadow: 0px 0px 10px 2px rgba(34, 60, 80, 0.2);
+      -moz-box-shadow: 0px 0px 10px 2px rgba(34, 60, 80, 0.2);
+      box-shadow: 0px 0px 10px 2px rgba(34, 60, 80, 0.2);
+      &__list-item{
+        margin: 5px;
+      }
+    }
+  }
+  &__list-products{
+    text-align: left;
+    ul{
+      li{
+        list-style: decimal;
+        margin: 10px;
+      }
+    }
+  }
 }
 .change{
   width: 90%;
@@ -101,7 +300,7 @@ img{
   top: 20%;
   left: 28%;
   padding: 15px;
-  border-radius: 10px;
+  border-radius: 0 10px 10px 10px;
   padding: 10px;
   -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
   -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);

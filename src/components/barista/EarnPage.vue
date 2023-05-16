@@ -84,7 +84,7 @@
 <script>
 import { AccordionList, AccordionItem } from 'vue3-rich-accordion'
 import { mapActions, mapGetters } from 'vuex'
-import OrderItem from './OrderItem.vue'
+import OrderItem from './orders/OrderItem.vue'
 import moment from 'moment'
 
 export default {

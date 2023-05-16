@@ -26,20 +26,42 @@
         <input required type="number" v-model="this.price" class="change" placeholder="Цена...">
       </div>
     </div>
-      <div class="modal-details modal-details__text">
-        <span class="modal-details__title">Описание: </span>
-        <textarea required type="text" v-model="this.title" placeholder="Описание товара..." class="change__title text-title"></textarea>
+    <div class="details coffeeshops-selection">
+      <span class="modal-details__title">Кофейни: </span>
+      <div class="coffeeshops-selection__selected" @click="openShopsList()">
+        <span class="coffeeshops-selection__btn" v-if="this.shops.length == 0">Выберите кофейню</span>
+        <div class="coffeeshops-selection__list-input">
+          <span class="coffeeshops-selection__input-list-item" v-for="shop in this.shops" :key="shop.id">
+            {{shop}}
+          </span>
+        </div>
       </div>
-      <button class="add-btn" @click="addItemToDB" :disabled="!validCheck">Добавить</button>
-    </div>  
+      <div class="coffeeshops-selection__list" v-if="this.isShopsList">
+        <input class="btn-select-all" type="checkbox" @click="selectAll()" v-model="checkSelectAll" id="selectAll">
+        <label for="selectAll">Все</label>
+        <div class="coffeeshops-selection__item" v-for="shop in SHOPS" :key="shop.id">
+          <input v-model="this.shops" 
+          type="checkbox" 
+          :name="shop.address" :id="shop.address" :value="shop.address">
+          <label :for="shop.address">{{shop.address}}</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-details modal-details__text">
+      <span class="modal-details__title">Описание: </span>
+      <textarea required type="text" v-model="this.title" placeholder="Описание товара..." class="change__title text-title"></textarea>
+    </div>
+    <button class="add-btn" @click="addItemToDB" :disabled="!validCheck">Добавить</button>
+  </div>  
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: "ModalAddItem",
   mounted() {
+    this.GET_SHOPS_FROM_DB()
   },
   data() {
     return {
@@ -56,19 +78,29 @@ export default {
       quantity: 0,
       type: "",
       title: "",
+      isShopsList: false,
+      shops: []
     }
   },
   props: {
     typeProp: String
   },
   computed:{
+    ...mapGetters([
+      'SHOPS'
+    ]),
     validCheck(){
       if (this.name != "" && this.article != "" && this.price != 0 && this.type != "" && this.title != "" ) {
         return true
       } else {
         return false
       }
-    }
+    },
+    checkSelectAll(){
+      if (this.shops.length == this.SHOPS.length) {
+        return true
+      } else return false
+    },
   },
   watch:{
     typeProp(){
@@ -106,8 +138,19 @@ export default {
   methods: {
     ...mapActions([
       'ADD_FOOD_ITEM_TO_DB',
-      'ADD_DRINK_ITEM_TO_DB'
+      'ADD_DRINK_ITEM_TO_DB',
+      'GET_SHOPS_FROM_DB'
     ]),
+    selectAll(){
+      if(this.shops.length == this.SHOPS.length){
+        this.shops = []
+      } else this.shops = this.SHOPS.map(shop => shop.address)
+    },
+    openShopsList(){
+      if (this.isShopsList) {
+        this.isShopsList = false
+      } else this.isShopsList = true
+    },
     addItemToDB(){
       let productItem = {
           name: this.name,
@@ -116,7 +159,8 @@ export default {
           price: this.price,
           quantity: this.quantity,
           type: this.type,
-          title: this.title
+          title: this.title,
+          coffeeshops: this.shops
         }
         if (["Кофе", "Чай"].includes(this.type)) {
           this.ADD_DRINK_ITEM_TO_DB(productItem)
@@ -126,7 +170,8 @@ export default {
         this.name = "",
         this.article = "",
         this.price = 0,
-        this.title = ""
+        this.title = "",
+        this.shops = []
     },
   },
 }
@@ -135,6 +180,50 @@ export default {
 <style lang="scss" scoped>
 img{
   width: 100px;
+}
+.coffeeshops-selection{
+  text-align: left;
+  &__selected{
+    background-color: white;
+    width: 90%;
+    max-height: 65px;
+    overflow-y: scroll;
+    margin: 10px 0;
+    border: 1px;
+    font-size: 18px;
+    padding: 5px;
+    border-radius: 2px;
+    border-color: #767676;
+    border-width: 1px;
+    border-style: inset;
+    border-image: initial;
+  }
+  &__btn{
+    color: #828482;
+  }
+  &__input-list-item{
+    margin-bottom: 10px;
+  }
+  &__list-input{
+    display: grid;
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+  &__list{
+    text-align: left;
+    width: -webkit-fill-available;
+    margin: 0 10% 0 0;
+    position: absolute;
+    bottom: 66px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 0 0 10px 10px;
+    border-style: solid;
+    border-color: #989898;
+    border-width: 1px;
+    input{
+    }
+  }
 }
 .modal-product-item{
   background-color: white;
