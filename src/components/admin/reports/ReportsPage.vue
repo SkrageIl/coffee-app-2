@@ -46,4 +46,20 @@ export default {
   -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) !important;
   box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) !important;
 }
+@media (max-width: 576px) {
+  p{
+    margin: 0 5%;
+  }
+  .reports-page{
+    &__nav{
+      a{
+        font-size: 12px;
+      }
+
+    }
+  }
+  .router-link-active{
+    font-size: 14px !important;
+  }
+}
 </style>

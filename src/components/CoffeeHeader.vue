@@ -83,11 +83,11 @@ export default {
 }
 .logout{
   color: white;
-  font-size: 35px;
+  font-size: 1.75em;
   font-weight: 800;
   position: fixed;
-  right: 25px;
-  top: 25px;
+  right: 20px;
+  top: 22px;
 }
 .back-popup-btn{
   position: fixed;
@@ -103,7 +103,7 @@ export default {
   position: fixed;
   width: 100%;
   left: 0;
-  height: 5em;
+  height: 4em;
   margin-top: 0;
   background-color: #3a3939;
   border-bottom-left-radius: 25px;
@@ -113,8 +113,8 @@ export default {
   z-index: 2;
   &__logo{
     width: auto;
-    height: 3.2em;
-    margin-top: 1em;
+    height: 2.2em;
+    margin-top: 15px;
     margin-left: 50px;
   }
   &__logo-title{
@@ -140,7 +140,6 @@ export default {
   width: 100%;
   justify-content: center;
 }
-
 @media(min-width: 576px){
   .header{
     border-bottom-left-radius: 0;

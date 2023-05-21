@@ -1,7 +1,9 @@
 <template>
   <div class="product-item">
     <div class="product-item__left-content">
-      <img src="@/assets/glyase.png" alt="Фото товара" :class="classes">
+      <div class="product-item__left-content__img" :class="classes">
+        <img :src="require(`@/assets/catalog/${product_data.image}.png`)" alt="Фото товара">
+      </div>
     </div>
     <div class="product-item__right-content">
       <div class="details">
@@ -12,11 +14,11 @@
         <span class="details-bold">Артикул: </span>
         <span class="details__props">{{product_data.article}}</span>
       </div>
-      <div class="details" v-if="this.width > 1024">
+      <div class="details" v-if="this.width > 960">
         <span class="details-bold">Тип: </span>
         <span class="details__props">{{product_data.type}}</span>
       </div>
-      <div class="details details__price" v-if="this.width > 1024">
+      <div class="details details__price" v-if="this.width > 960">
         <span class="details-bold">Цена: </span>
         <span class="details__props">{{product_data.price}} &#8381;</span>
       </div>
@@ -123,22 +125,15 @@ export default {
 <style lang="scss" scoped>
 .coffee{
   background-color: #FFB21C !important;
-  border-radius: 5px;
 }
 .tea{
   background-color: #69af60 !important;
-  border-radius: 5px;
 }
 .sweet{
   background-color: #f6a9f9 !important;
-  border-radius: 5px;
 }
 .meal{
   background-color: #f57878  !important;
-  border-radius: 5px;
-}
-img{
-  width: 100px;
 }
 .dialog{
   background-color: white;
@@ -230,13 +225,13 @@ img{
     -webkit-box-shadow: 0px 10px 10px 2px rgba(34, 60, 80, 0.2);
     -moz-box-shadow: 0px 10px 10px 2px rgba(34, 60, 80, 0.2);
     box-shadow: 0px 10px 10px 2px rgba(34, 60, 80, 0.2);
-    input{
-    }
   }
 }
 .product-item{
   display: grid;
   grid-template-columns: auto 1fr;
+  align-content: baseline;
+  justify-items: flex-start;
   margin: 20px;
   min-height: 300px;
   border-radius: 10px;
@@ -250,6 +245,18 @@ img{
     justify-items: center;
     margin-top: 25px;
     grid-template-rows: auto auto 1fr;
+    &__img{
+      display: grid;
+      align-items: center;
+      justify-items: center;
+      border-radius: 5px;
+      min-height: 90px;
+      min-width: 90px;
+      img{
+        width: 80px;
+        padding: 5px;
+      }
+    }
   }
   &__right-content{
     text-align: left;
@@ -330,7 +337,7 @@ img{
   width: 100px;
 }
 
-@media(min-width: 1024px){
+@media(min-width: 960px){
   .article{
     margin-right: 9px;
   }
@@ -354,7 +361,60 @@ img{
     margin-right: 5%;
   }
 }
+@media (max-width: 960px) {
+  .product-item{
+    &__left-content{
+      padding: 10px 0 10px 15px;
+    }
+  }
+}
+@media (min-width: 576px) and (max-width: 960px) {
+  .product-item{
+    &__left-content{
+      margin-top: 15px;
+      &__img{
+        img{
+          width: 70px;
+        }
+      }
+    }
+  }
+  .details{
+    &__bot{
+      position: relative;
+      left: -105px;  
+    }
+    &__title{
+      margin-top: 10px;
+    }
+  }
+}
+@media (max-width: 700px) {
+  .delete-btn{
+    font-size: 14px;
+  }
+}
+@media(min-width: 576px) and (max-width: 760px){
+  .details{
+    &__props{
+      padding: 5px;
+      padding-left: 0;
+      padding-right: 0;
+      display: flex;
+    }
+  }
+}
 @media(max-width: 576px){
+  .product-item{
+    &__left-content{
+      margin-top: 15px;
+      &__img{
+        img{
+          width: 65px;
+        }
+      }
+    }
+  }
   .details{
     &__price{
       margin-left: 15px;
@@ -365,15 +425,12 @@ img{
       padding-right: 0;
       display: flex;
     }
-  }
-}
-@media(min-width: 576px) and (max-width: 760px){
-  .details{
-    &__props{
-      padding: 5px;
-      padding-left: 0;
-      padding-right: 0;
-      display: flex;
+    &__bot{
+      position: relative;
+      left: -105px;
+    }
+    &__title{
+      margin-top: 10px;
     }
   }
 }

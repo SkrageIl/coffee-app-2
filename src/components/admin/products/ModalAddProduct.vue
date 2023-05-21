@@ -1,7 +1,7 @@
 <template>
   <div class="modal-product-item" :class="classes">
     <div class="modal-product-item__left-content">
-      <img src="@/assets/glyase.png" alt="Фото товара" >
+      <!-- <img :src="require(`@/assets/catalog/${item.image}.png`)" alt="Фото товара" > -->
     </div>
     <div class="modal-product-item__right-content">
       <div class="modal-details">
@@ -26,7 +26,7 @@
         <input required type="number" v-model="this.price" class="change" placeholder="Цена...">
       </div>
     </div>
-    <div class="details coffeeshops-selection">
+    <div class="details coffeeshops-selection" v-click-outside="onClickOutside">
       <span class="modal-details__title">Кофейни: </span>
       <div class="coffeeshops-selection__selected" @click="openShopsList()">
         <span class="coffeeshops-selection__btn" v-if="this.shops.length == 0">Выберите кофейню</span>
@@ -56,10 +56,14 @@
 </template>
 
 <script>
+import vClickOutside from 'click-outside-vue3'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: "ModalAddItem",
+  directives: {
+    clickOutside: vClickOutside.directive
+    },
   mounted() {
     this.GET_SHOPS_FROM_DB()
   },
@@ -141,6 +145,9 @@ export default {
       'ADD_DRINK_ITEM_TO_DB',
       'GET_SHOPS_FROM_DB'
     ]),
+    onClickOutside(){
+      this.isShopsList = false
+    },
     selectAll(){
       if(this.shops.length == this.SHOPS.length){
         this.shops = []
@@ -155,7 +162,7 @@ export default {
       let productItem = {
           name: this.name,
           article: this.article,
-          image: "img" + this.article + ".jpg",
+          image: "kapuchino",
           price: this.price,
           quantity: this.quantity,
           type: this.type,
@@ -214,15 +221,13 @@ img{
     width: -webkit-fill-available;
     margin: 0 10% 0 0;
     position: absolute;
-    bottom: 66px;
+    bottom: -10px;
     background-color: white;
     padding: 10px;
     border-radius: 0 0 10px 10px;
     border-style: solid;
     border-color: #989898;
     border-width: 1px;
-    input{
-    }
   }
 }
 .modal-product-item{
@@ -297,6 +302,67 @@ img{
 @media(max-width: 1024px){
   .modal-product-item{
     left: 30%
+  }
+}
+@media(max-width: 960px){
+  img{
+    width: 70px;
+  }
+  .modal-product-item{
+    padding: 10px;
+    width: 280px;
+    &__right-content{
+      column-gap: 15px;
+      row-gap: 5px;
+      padding: 5px 20px 10px 0;
+    }
+  }
+  .modal-details{
+    &__title{
+      font-size: 13px;
+      padding: 5px 10px 0 0;
+    }
+    &__text{
+      padding-right: 0 !important;
+    }
+  }
+  .text-title{
+    height: 50px;
+    font-size: 13px;
+    margin-top: 5px;
+  }
+  .change{
+    width: 120px;
+    font-size: 13px;
+    padding: 5px;
+  }
+  .coffeeshops-selection{
+    &__selected{
+      width: 70%;
+      max-height: 65px;
+      margin: 5px 0;
+      font-size: 13px;
+      padding: 5px;
+    }
+  }
+  .add-btn{
+    padding: 5px;
+    font-size: 13px;
+  }
+}
+@media (max-width: 576px) {
+  .modal-product-item{
+    left: 25%;
+  }
+}
+@media (max-width: 460px) {
+  .modal-product-item{
+    left: 20%;
+  }
+}
+@media (max-width: 415px) {
+  .modal-product-item{
+    left: 15%;
   }
 }
 </style>

@@ -27,6 +27,9 @@
         </button>
       </div>
     </div>
+    <div v-if="order_data.status !== 'Завершен'" class="cancel-btn">
+      <button @click="this.deleteOrder()">Отменить заказ</button>
+    </div>
   </div>
 </template>
 
@@ -60,7 +63,8 @@ export default {
   },
   methods: {
     ...mapActions([
-    'CHANGE_BARISTA_ORDER_STATUS'
+    'CHANGE_BARISTA_ORDER_STATUS',
+    'DELETE_ORDER_FROM_DB'
   ]),
   classBg(item){
       if(item.type == 'Чай'){
@@ -80,6 +84,9 @@ export default {
     if (status == "Готов") {
       return "Завершен"
     }
+  },
+  deleteOrder(){
+    this.DELETE_ORDER_FROM_DB(this.order_data.id)
   },
   changeStatusOrder(id,status){
     var nextStatus = this.nextStageStatusOrder(status)
@@ -112,7 +119,7 @@ export default {
 }
 .img-item{
   padding: 10px;
-  margin: 10px;
+  margin: 0 10px;
   border-radius: 10px;
 }
 img{
@@ -127,10 +134,10 @@ li{
   grid-template-columns: auto 1fr 1fr 1fr;
   font-size: 20px;
   justify-content: center;
+  align-items: flex-start;
   font-weight: 600;
   font-family: 'Montserrat', sans-serif;
   margin: 2em 0;
-  align-items: center;
 }
 span{
   text-align: left;
@@ -150,6 +157,7 @@ span{
     font-size: 1.5em;
     display: flex;
     justify-content: space-around;
+    align-items: baseline;
   }
   &__total-title{
     margin-right: 1em;
@@ -183,6 +191,23 @@ span{
 .ready{
   background-color: green !important;
 }
+.cancel-btn{
+  button{
+    cursor: pointer;
+    margin-left: 1em;
+    color: white;
+    padding: 1em;
+    font-size: 1em;
+    width: 200px;
+    font-weight: 800;
+    border-radius: 22px;
+    border: 0;
+    background-color: red;
+    -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
+    -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
+    box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2) inset;
+  }
+}
 
 @media(max-width: 576px){
   li{
@@ -199,6 +224,32 @@ span{
       padding: 0.5em;
       font-size: 0.8em;
       width: 100px;
+    }
+  }
+  .img-item{
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+    img{
+      width: 45px;
+    }
+  }
+}
+@media (max-width: 460px) {
+  .img-item{
+    width: 25px;
+    margin: 0 5px;
+    img{
+      width: 25px;
+    }
+  }
+  li{
+    font-size: 9px;
+  }
+  .orders{
+    &__total{
+      font-size: 14px;
     }
   }
 }

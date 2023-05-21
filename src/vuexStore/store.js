@@ -15,7 +15,8 @@ let store = createStore({
         drinks: [],
         foods: [],
         workers: [],
-        completedOrders: []
+        completedOrders: [],
+        currentOrders: []
     },
     mutations: {
         auth_request(state) {
@@ -47,6 +48,12 @@ let store = createStore({
                 }
             })
         },
+        DELETE_BARISTA_CURRENT_ORDER(state, id) {
+            let index = state.baristaCurrentOrders.findIndex(order => order.id == id);
+            if (index !== -1) {
+                state.baristaCurrentOrders.splice(index, 1);
+            }
+        },
         SET_DRINKS_TO_STATE: (state, drinks) => {
             state.drinks = drinks;
         },
@@ -67,6 +74,9 @@ let store = createStore({
         },
         SET_COMPLETED_ORDERS_TO_STATE: (state, orders) => {
             state.completedOrders = orders
+        },
+        SET_CURRENT_ORDERS_TO_STATE: (state, orders) => {
+            state.currentOrders = orders
         }
     },
     actions: {
@@ -151,12 +161,28 @@ let store = createStore({
             return new Promise((resolve, reject) => {
                 axios('http://localhost:3000/orders/' + order.id, {
                         data: {
-                            "status": order.status
+                            "status": order.status,
+                            "worker": order.worker
                         },
                         method: 'PATCH'
                     })
                     .then(() => {
                         commit('COMPLETE_ORDER', order)
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(err)
+                    })
+            })
+        },
+        DELETE_ORDER_FROM_DB({ commit }, id) {
+            return new Promise((resolve, reject) => {
+                axios('http://localhost:3000/orders/' + id, {
+                        method: 'DELETE'
+                    })
+                    .then(() => {
+                        commit('DELETE_BARISTA_CURRENT_ORDER', id)
                         resolve()
                     })
                     .catch(err => {
@@ -463,12 +489,16 @@ let store = createStore({
                 })
                 .then((orders) => {
                     var completedOrders = []
+                    var currentOrders = []
                     orders.data.forEach(function(order) {
                         if (order.status == "Завершен") {
                             completedOrders.push(order)
+                        } else if (order.status !== "Завершен") {
+                            currentOrders.push(order)
                         }
                     })
                     commit('SET_COMPLETED_ORDERS_TO_STATE', completedOrders)
+                    commit('SET_CURRENT_ORDERS_TO_STATE', currentOrders)
                 })
                 .catch((error) => {
                     console.log(error)
@@ -479,6 +509,7 @@ let store = createStore({
         BARISTA_CURRENT_ORDERS: state => state.baristaCurrentOrders,
         BARISTA_COMPLETED_ORDERS: state => state.baristaCompletedOrders,
         COMPLETED_ORDERS: state => state.completedOrders,
+        CURRENT_ORDERS: state => state.currentOrders,
         USER: state => state.user,
         DRINKS: state => state.drinks,
         FOODS: state => state.foods,

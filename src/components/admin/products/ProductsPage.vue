@@ -130,10 +130,10 @@ export default {
 }
 .products{
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   margin-top: 50px;
   &__top-content{
-    grid-column: span 2;
+    grid-column: span 3;
     margin-left: 25px;
     margin-bottom: 0;
     display: flex;
@@ -149,7 +149,7 @@ export default {
     margin-left: 20px;
   }
   &__title{
-    grid-column: span 2;
+    grid-column: span 3;
     font-size: 30px;
     font-weight: 700;
     text-align: left;
@@ -158,9 +158,44 @@ export default {
 .nav-bar{
   overflow-x: scroll;
   overflow: hidden;
-  padding: 1.25em 0;
+  padding: 0.5em 0;
   position: fixed;
   top: 4em;
   width: 100%;
+}
+@media(max-width: 1024px){
+  .products{
+    grid-template-columns: 1fr 1fr;
+    &__top-content{
+      grid-column: span 2;
+    }
+    &__title{
+      grid-column: span 2;
+    }
+  }
+}
+@media(max-width: 750px){
+  .products{
+    grid-template-columns: 1fr;
+    &__top-content{
+      grid-column: span 1;
+    }
+    &__title{
+      grid-column: span 1;
+    }
+  }
+  .product-item{
+    margin: 10px 10%;
+  }
+}
+@media(max-width: 960px){
+  .products{
+    &__title{
+      font-size: 20px;
+    }
+    &__add{
+      font-size: 15px;
+    }
+  }
 }
 </style>

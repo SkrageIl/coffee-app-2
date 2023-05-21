@@ -76,7 +76,7 @@ export default {
           this.$router.push('/admin')
         } 
       })
-      .catch(err => console.log(err + password))
+      .catch(err => console.log(err))
       setTimeout(() => {
         if (!this.isLoggedIn){
           this.$notify({

@@ -1,7 +1,9 @@
 <template>
   <div class="product-item" v-click-outside="onClickOutside">
     <div class="product-item__left-content">
-      <img src="@/assets/glyase.png" alt="Фото товара" :class="classes">
+      <div class="product-item__left-content__img" :class="classes">
+        <img :src="require(`@/assets/catalog/${product_data.image}.png`)" alt="Фото товара">
+      </div>
     </div>
     <div class="product-item__right-content">
       <div class="details">
@@ -14,7 +16,7 @@
         <span v-if="!isChange" class="details__props">{{product_data.article}}</span>
         <input type="text" v-if="isChange" v-model="this.article" class="change">
       </div>
-      <div class="details" v-if="this.width > 1024">
+      <div class="details" v-if="this.width > 960">
         <span class="details-bold">Тип: </span>
         <span v-if="!isChange" class="details__props">{{product_data.type}}</span>
         <select v-model="this.type" v-if="isChange" placeholder="Тип..." class="change select">
@@ -24,7 +26,7 @@
           <option>Сытное</option>
         </select>
       </div>
-      <div class="details details__price" v-if="this.width > 1024">
+      <div class="details details__price" v-if="this.width > 960">
         <span class="details-bold">Цена: </span>
         <span v-if="!isChange" class="details__props">{{product_data.price}} &#8381;</span>
         <input type="text" v-if="isChange" v-model="this.price" class="change">
@@ -76,7 +78,7 @@
     </div>
     <div class="details details__title">
       <span class="details-bold">Описание: </span>
-      <span v-if="!isChange" class="details__props">{{product_data.title}}</span>
+      <span v-if="!isChange" class="details__props title-block">{{product_data.title}}</span>
       <textarea type="text" v-if="isChange" v-model="this.title" class="change__title"></textarea>
     </div>
     <div class="buttons">
@@ -245,19 +247,16 @@ export default {
   background-color: #f57878  !important;
   border-radius: 5px;
 }
-img{
-  width: 100px;
-}
 .dialog{
   background-color: white;
-  padding: 1% 6% 3%;
+  padding: 10px;
   border-radius: 10px;
-  width: 50%;
+  width: 100%;
   font-size: 20px;
   &__close-popup-btn{
     position: absolute;
     top: 5px;
-    right: 20%;
+    right: 5px;
     font-size: 15px;
     padding: 5px 7px;
     color: #ffffff;
@@ -338,13 +337,12 @@ img{
     -webkit-box-shadow: 0px 10px 10px 2px rgba(34, 60, 80, 0.2);
     -moz-box-shadow: 0px 10px 10px 2px rgba(34, 60, 80, 0.2);
     box-shadow: 0px 10px 10px 2px rgba(34, 60, 80, 0.2);
-    input{
-    }
   }
 }
 .product-item{
   display: grid;
   grid-template-columns: auto 1fr;
+  align-content: baseline;
   margin: 20px;
   min-height: 300px;
   border-radius: 10px;
@@ -354,10 +352,22 @@ img{
   &__left-content{
     display: grid;
     max-width: 100px;
-    padding: 10px;
+    padding: 20px 10px 10px 20px;
     justify-items: center;
-    margin-top: 25px;
+    margin: 15px 10px;
     grid-template-rows: auto auto 1fr;
+    &__img{
+      display: grid;
+      align-items: center;
+      justify-items: center;
+      border-radius: 5px;
+      min-height: 90px;
+      min-width: 90px;
+      img{
+        width: 70px;
+        padding: 5px;
+      }
+    }
   }
   &__right-content{
     text-align: left;
@@ -439,7 +449,7 @@ img{
   width: 100px;
 }
 
-@media(min-width: 1024px){
+@media(min-width: 960px){
   .article{
     margin-right: 9px;
   }
@@ -463,6 +473,27 @@ img{
     margin-right: 5%;
   }
 }
+@media(min-width: 576px) and (max-width: 960px){
+  .details{
+    &__bot{
+      display: flex;
+      position: relative;
+      left: -137px;
+      margin: 10px 0;
+      column-gap: 10%;
+    }
+  }
+}
+@media(min-width: 576px) and (max-width: 760px){
+  .details{
+    &__props{
+      padding: 5px;
+      padding-left: 0;
+      padding-right: 0;
+      display: flex;
+    }
+  }
+}
 @media(max-width: 576px){
   .details{
     &__price{
@@ -474,15 +505,62 @@ img{
       padding-right: 0;
       display: flex;
     }
+    &__bot{
+      display: flex;
+      position: relative;
+      left: -107px;
+      margin: 10px 0;
+      column-gap: 10%;
+    }
+  }
+  .product-item{
+    &__left-content{
+      display: grid;
+      max-width: 100px;
+      padding: 10px 0 0 0;
+      justify-items: center;
+      margin: 20px 0 0 20px;
+      grid-template-rows: auto auto 1fr;
+    }
+  }
+  .title-block{
+    padding-right: 5px;
   }
 }
-@media(min-width: 576px) and (max-width: 760px){
+@media(max-width: 410px){
+  img{
+    width: 80px;
+  }
+  .product-item{
+    &__left-content{
+      margin-top: 10px;
+    }
+    &__right-content{
+      margin: 20px 5px 0 0;
+    }
+  }
   .details{
-    &__props{
-      padding: 5px;
-      padding-left: 0;
-      padding-right: 0;
-      display: flex;
+    font-size: 15px;
+    &__price{
+      margin-left: 5px;
+    }
+  }
+  .buttons{
+    padding: 0 15%;
+    height: 35px;
+  }
+  .change-btn{
+    font-size: 15px;
+    padding: 5px;
+  }
+  .delete-btn{
+    font-size: 15px;
+    padding: 5px;
+  }
+  .coffeeshops-selection{
+    &__selected{
+      margin: 0;
+      font-size: 15px;
     }
   }
 }

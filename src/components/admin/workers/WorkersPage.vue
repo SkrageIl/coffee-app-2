@@ -83,12 +83,23 @@ export default {
 }
 @media(min-width: 1024px){
   .workers{
+    grid-template-columns: 1fr 1fr 1fr;
     row-gap: 10%;
   }
 }
 @media(max-width: 576px){
   .workers{
     grid-template-columns: 1fr;
+    row-gap: 1%;
+    &__top-content{
+      font-size: 18px;
+    }
+    &__add{
+      font-size: 15px;
+      margin: 15px 0;
+      margin-left: 10px;
+      padding: 0 5px;
+    }
   }
 }
 </style>

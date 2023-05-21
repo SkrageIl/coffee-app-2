@@ -520,30 +520,43 @@ p{
 }
 
 @media(max-width: 576px){
+  p{
+    font-size: 13px !important;
+  }
   .calendar{
     &__inputs{
       display: flex;
       align-items: center;
     }
     &__content{
-      margin-right: 1em;
+      margin-right: 0 1em;
     }
     &__input{
-      width: 90px;
-    height: fit-content;
-    padding: 5px;
-    margin: 0;
-    font-size: 1em;
+      width: 75px;
+      height: fit-content;
+      padding: 5px;
+      margin: 0;
+      font-size: 14px;
     }
     &__icon{
-      font-size: 30px;
-      padding: 4px 5px 5px;
+      font-size: 22px;
+      padding: 5px 5px 4px;
     }
     &__btn{
       font-size: 50px;
       width: fit-content;
       display: flex;
-      margin-right: 0;
+      margin-right: 5px;
+    }
+    &__close-btn{
+      button{
+        padding: 5px;
+        font-size: 14px;
+        margin-left: 5px;
+      }
+    }
+    &__arrow{
+      font-size: 16px;
     }
   }
   .accord-order{
@@ -555,10 +568,15 @@ p{
       padding: 10px 10px 10px 5px;
     }
     &__item{
-      font-size: 1em;
+      font-size: 10px;
+      margin: 5px;
+      img{
+        width: 50px;
+      }
     }
     &__days{
-      padding: 10px;
+      padding: 0 10px 10px;
+      margin: 15px 10%;
     }
   }
   .earning-selected{
@@ -577,6 +595,7 @@ p{
     &__center-content{
       grid-template-columns: 1fr;
       justify-items: baseline;
+      margin-top: 15px;
       p{
         margin: 5px 20px;
         font-size: 15px
@@ -587,9 +606,31 @@ p{
     font-size: 100%;
   }
   .details-orders{
-    font-size: 12px;
+    font-size: 10px;
     p{
       font-size: 10px;
+    }
+  }
+  .workers-accord{
+    margin-top: 0;
+  }
+  .workers-selection{
+    &__input{
+      padding: 10px;
+      font-size: 14px;
+    }
+    &__item{
+      margin: 2px 10px;
+    }
+    &__list{
+      margin: 5px;
+    }
+  }
+  .accordion-item{
+    &__summary-title{
+      p{
+        font-size: 10px !important;
+      }
     }
   }
 }

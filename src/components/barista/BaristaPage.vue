@@ -1,5 +1,5 @@
 <template>
-  <sidebar-menu :menu="menu"  :collapsed="true" v-if="this.$route.path != '/barista'"/>
+  <sidebar-menu :menu="menu" :collapsed="true" v-if="this.$route.path != '/barista'"/>
   <CoffeeHeader/>
 <div class="barista-page" v-if="this.$route.path == '/barista'">
   <div class="barista-menu">
@@ -79,15 +79,14 @@ methods: {
 <style lang="scss" scoped>
 .barista-page{
   display: grid;
-  margin-top: 50%;
+  margin-top: 175px;
   justify-content: center;
 }
 .barista-menu{
   display: grid;
   margin-top: 30px;
   padding: 30px;
-  max-width: 300px;
-  min-width: 250px;
+  min-width: 325px;
   border-radius: 22px;
   -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
   -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
@@ -110,13 +109,36 @@ methods: {
 }
 .exit{
   font-size: 15px;
-  padding: 5px;
+  padding: 10px;
   margin-bottom: 0;
-  width: 100px;
+  width: 125px;
   justify-self: center;
 }
 .wrapper-barista{
   margin-top: 6em;
   margin-left: 55px;
+}
+@media(min-width: 900px){
+  .admin-page{
+    margin-top: 200px;
+  }
+}
+@media(max-width: 576px){
+  .barista-page{
+    margin-top: 25%;
+  }
+  .barista-menu{
+    justify-content: center;
+    min-width: fit-content;
+    &__btn{
+      font-size: 15px;
+      margin: 10px;
+      width: auto;
+      padding: 10px;
+    }
+  }
+  .exit{
+    padding: 5px 10px;
+  }
 }
 </style>

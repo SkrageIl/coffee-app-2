@@ -3,10 +3,15 @@
   <CoffeeHeader/>
 <div class="admin-page" v-if="this.$route.path == '/admin'">
   <div class="admin-menu">
-    <router-link :to="{name:'products'}" class="admin-menu__btn">Каталог</router-link>
-    <router-link :to="{name:'workers'}" class="admin-menu__btn">Сотрудники</router-link>
-    <router-link :to="{name:'coffeeshops'}" class="admin-menu__btn">Кофеточки</router-link>
-    <router-link :to="{name:'byCoffeeshops'}" class="admin-menu__btn">Отчёты</router-link>
+    <div class="handling-btn">
+      <router-link :to="{name:'products'}" class="admin-menu__btn">Каталог</router-link>
+      <router-link :to="{name:'workers'}" class="admin-menu__btn">Сотрудники</router-link>
+      <router-link :to="{name:'coffeeshops'}" class="admin-menu__btn">Кофеточки</router-link>
+    </div>
+    <div class="reports-btn">
+      <router-link :to="{name:'ordersStats'}" class="admin-menu__btn">Заказы</router-link>
+      <router-link :to="{name:'byCoffeeshops'}" class="admin-menu__btn">Отчёты</router-link>
+    </div>
     <button @click="this.logout" class="admin-menu__btn exit">Выйти</button>
   </div>
 </div>
@@ -58,6 +63,15 @@ export default {
         }
       },
       {
+        href: '/admin/orders-stats',
+        title: 'Заказы',
+        icon: {
+          element: 'span',
+          class: 'material-icons',
+          text: 'receipt_long'
+        }
+      },
+      {
         title: 'Отчёты',
         icon: {
           element: 'span',
@@ -74,7 +88,7 @@ export default {
                 title: 'По сотрудникам',
               },
             ],
-      }
+      },
     ]
     };
   },
@@ -92,50 +106,44 @@ export default {
 
 <style lang="scss" scoped>
 .admin-page{
-  display: grid;
-  margin-top: 50%;
+  margin-top: 10rem;
+  display: flex;
   justify-content: center;
 }
 .admin-menu{
+  width: fit-content;
   display: grid;
-  margin-top: 30px;
-  padding: 30px;
-  max-width: 300px;
-  min-width: 250px;
-  border-radius: 22px;
-  -webkit-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-  -moz-box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
-  box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+  grid-template-rows: 1fr 1fr 1fr;
+  justify-items: center;
+  align-items: center;
+  border-radius: 15px;
+  padding: 10px;
+  -webkit-box-shadow: 0px 0px 10px 2px rgba(34, 60, 80, 0.2);
+  -moz-box-shadow: 0px 0px 10px 2px rgba(34, 60, 80, 0.2);
+  box-shadow: 0px 0px 10px 2px rgba(34, 60, 80, 0.2);
   &__btn{
-    font-size: 20px;
+    font-weight: 600;
+    font-size: 1rem;
     text-decoration: none;
-    background-image: linear-gradient(to right, #232526 0%, #414345  51%, #232526  100%);
-    cursor: pointer;
-    border-radius: 22px;
-    border: 0;
-    margin: 15px;
-    padding: 20px;
-    font-weight: 800;
-    color: #fbfbfb;
-    -webkit-box-shadow: 10px 10px 10px -7px rgba(255, 144, 0, 0.2);
-    -moz-box-shadow: 10px 10px 10px -7px rgba(255, 144, 0, 0.2);
-    box-shadow: 10px 10px 10px -7px rgba(255, 144, 0, 0.2);
+    color: white;
+    background-color: black;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    margin: 0.5rem;
   }
-}
-.exit{
-  font-size: 15px;
-  padding: 5px;
-  margin-bottom: 0;
-  width: 100px;
-  justify-self: center;
 }
 .wrapper-admin{
   margin-top: 6em;
   margin-left: 55px;
 }
 @media(min-width: 900px){
-  .admin-page{
-    margin-top: 200px;
+}
+@media(max-width: 576px){
+  .admin-menu{
+    &__btn{
+      font-size: 0.8em;
+      padding: 0.5rem 1rem;
+    }
   }
 }
 </style>

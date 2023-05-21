@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref } from 'vue'
 import { AccordionList, AccordionItem } from 'vue3-rich-accordion'
 import { mapActions, mapGetters } from 'vuex'
 import OrderItem from './OrderItem.vue'
@@ -120,7 +120,6 @@ computed: {
     let search = this.searchCurrent
     return this.BARISTA_CURRENT_ORDERS.filter(function(order){
       if (order.status != "Завершен") {
-        console.log(order.client.tel.slice(-4))
         if (search == "" || order.client.name.toLowerCase().includes(search.toLowerCase())
             || order.client.tel.slice(-4) == search){
           return true
@@ -342,9 +341,12 @@ ul{
   }
 }
 @media(max-width: 576px){
+  h2{
+    font-size: 18px;
+  }
   .accor-order{
     &__title{
-      font-size: 1em;
+      font-size: 15px;
       width: 100px;
     }
     &__status{
@@ -383,8 +385,39 @@ ul{
     }
   }
   .search{
+    width: auto;
     input{
       width: 100%;
+      font-size: 15px;
+    }
+    .search-icon{
+      font-size: 24px;
+    }
+  }
+}
+@media (max-width: 460px) {
+  .accor-order{
+    &__title{
+      font-size: 12px;
+      width: 100px;
+    }
+    &__status{
+      font-size: 14px;
+    }
+  }
+  .img-item{
+    width: 25px;
+    margin: 0 5px;
+    img{
+      width: 25px;
+    }
+  }
+  li{
+    font-size: 9px;
+  }
+  .orders{
+    &__total{
+      font-size: 14px;
     }
   }
 }

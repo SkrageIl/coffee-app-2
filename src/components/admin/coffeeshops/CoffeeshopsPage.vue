@@ -59,7 +59,6 @@ export default {
 <style lang="scss" scoped>
 .shops{
   display: grid;
-  grid-template-columns: 1fr;
   justify-items: center;
   padding: 0 5% 5%;
   row-gap: 5%;
@@ -88,6 +87,13 @@ export default {
 @media(max-width: 576px){
   .shops{
     grid-template-columns: 1fr;
+    row-gap: 1%;
+    &__top-content{
+      font-size: 18px;
+    }
+    &__add{
+      font-size: 15px;
+    }
   }
 }
 </style>

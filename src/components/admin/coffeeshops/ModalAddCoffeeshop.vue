@@ -355,14 +355,57 @@ p{
     padding: 5px;
   }
 }
-@media(max-width: 576px){
-  .modal-shop-item{
-    width: 200px;
-  }
-}
 @media(min-width: 1024px){
   .modal-shop-item{
     left: 35%;
+  }
+}
+@media (max-width: 760px) {
+  .modal-shop-item{
+    left: 22%;
+  }
+}
+@media (max-width: 576px) {
+  .modal-shop-item{
+    width: 290px;
+    height: 250px;
+    left: 23%;
+  }
+  .modal-details{
+    font-size: 14px;
+  }
+  .shop-top-nav{
+    top: -36px;
+    button{
+      font-size: 14px;
+    }
+  }
+  .change{
+    font-size: 14px;
+  }
+  img{
+    width: 90px;
+    margin-bottom: 15px;
+  }
+  .products-block{
+    ul{
+      font-size: 14px;
+      li{
+        margin: 5px;
+      }
+    }
+    button{
+      font-size: 12px;
+      margin-left: 5px;
+    }
+    .type-product{
+      font-size: 14px;
+    }
+  }
+}
+@media (max-width: 415px) {
+  .modal-shop-item{
+    left: 12%;
   }
 }
 </style>

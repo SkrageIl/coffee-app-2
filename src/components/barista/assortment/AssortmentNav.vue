@@ -69,7 +69,7 @@ export default {
   }
   &__btn{
     font-family: 'Montserrat', sans-serif;
-    font-size: 22px;
+    font-size: 1rem;
     font-weight: 600;
     text-decoration: none;
     color: #cbcbcbd8;
@@ -114,15 +114,12 @@ export default {
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
       li:last-child {
-        margin-right: 30px;
+        margin-right: 80px;
       }
     }
     &__wrapper::-webkit-scrollbar {
       width: 0;
       height: 0;
-    }
-    &__btn{
-      font-size: 15px;
     }
   }
 }

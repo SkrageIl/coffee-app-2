@@ -241,7 +241,25 @@ input{
 }
 @media(max-width: 576px){
   .shop-item{
-    width: 200px;
+    width: -webkit-fill-available;
+    &__bot-content{
+      margin: 5px;
+    }
+  }
+  img{
+    width: 85px;
+    margin-bottom: 20px;
+  }
+  .details{
+    font-size: 16px;
+    margin: 0 0 0 10px;
+  }
+  .buttons{
+    margin: 10px 0;
+  }
+  .btn{
+    font-size: 15px;
+    padding: 5px 10px;
   }
 }
 </style>

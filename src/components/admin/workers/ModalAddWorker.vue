@@ -178,4 +178,23 @@ p{
     padding: 5px;
   }
 }
+@media (max-width: 700px) {
+  .modal-worker-item{
+    left: 30%;
+  }
+}
+@media (max-width: 576px) {
+  .modal-worker-item{
+    left: 25%;
+    top: 15%;
+  }
+  .modal-details{
+    font-size: 17px;
+  }
+}
+@media (max-width: 415px) {
+  .modal-worker-item{
+    left: 17%;
+  }
+}
 </style>

@@ -12,6 +12,7 @@ import ReportsPage from '@/components/admin/reports/ReportsPage.vue'
 import ReportByCoffeeshop from '@/components/admin/reports/ReportByCoffeeshop.vue'
 import ReportByWorker from '@/components/admin/reports/ReportByWorker.vue'
 import productsInCoffeeshopsPage from '@/components/barista/assortment/ProductsInCoffeeshopsPage.vue'
+import OrdersStatsPage from '@/components/admin/orders/OrdersStatsPage.vue'
 
 const router = createRouter({
     scrollBehavior: function(to) {
@@ -78,6 +79,11 @@ const router = createRouter({
                     path: 'workers',
                     name: 'workers',
                     component: WorkersPage
+                },
+                {
+                    path: 'orders-stats',
+                    name: 'ordersStats',
+                    component: OrdersStatsPage
                 },
                 {
                     path: 'reports',

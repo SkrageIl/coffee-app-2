@@ -69,7 +69,7 @@ export default {
   }
   &__btn{
     font-family: 'Montserrat', sans-serif;
-    font-size: 22px;
+    font-size: 1.25rem;
     font-weight: 600;
     text-decoration: none;
     color: #cbcbcbd8;
@@ -96,7 +96,13 @@ export default {
     color: white;
   }
 }
-
+@media (min-width: 576px) and (max-width: 960px) {
+  .catalog-nav{
+    &__btn{
+      font-size: 18px;
+    }
+  }
+}
 
 @media(max-width: 576px){
 

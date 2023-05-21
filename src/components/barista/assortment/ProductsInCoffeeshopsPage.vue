@@ -149,9 +149,40 @@ export default {
 .nav-bar{
   overflow-x: scroll;
   overflow: hidden;
-  padding: 1.25em 0;
+  padding: 0.5rem 0;
   position: fixed;
   top: 4em;
   width: 100%;
+}
+@media (min-width: 1024px) {
+  .products{
+    grid-template-columns: 1fr 1fr 1fr;
+    &__top-content{
+      grid-column: span 3;
+    }
+  }
+}
+@media (max-width: 960px) {
+  .products{
+    &__title{
+      font-size: 24px;
+      margin: 5px;
+    }
+  }
+  .delete-btn{
+    font-size: 16px;
+  }
+}
+@media (max-width: 576px) {
+  .products{
+    grid-template-columns: 1fr;
+    &__title{
+      margin: 10px 0 0;
+      font-size: 20px;
+    }
+    &__top-content{
+      grid-column: span 1;
+    }
+  }
 }
 </style>
