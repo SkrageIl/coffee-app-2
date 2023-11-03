@@ -99,8 +99,8 @@ export default {
       }
     }
     this.CHANGE_BARISTA_ORDER_STATUS(order)
-  },
-  },
+  }
+},
 };
 </script>
 

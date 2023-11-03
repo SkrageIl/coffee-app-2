@@ -65,7 +65,7 @@
           <span class="accor-order__title">
             {{ baristaOrder.client.name }}  {{ baristaOrder.client.tel }}  {{ this.formatTime(baristaOrder.time) }}
             <span class="earningPercent">
-              + {{ baristaOrder.total * 0.05 }}&#8381;
+              + {{ calcEarn(baristaOrder.total, 0.05) }}&#8381;
             </span>
           </span>
           <span class="accor-order__status" 
@@ -156,9 +156,9 @@ computed: {
     let rate = 1500
     let percent = 0.05
     var initialValue = 0
-    return this.currentCompletedOrders.reduce(
+    return (this.currentCompletedOrders.reduce(
         (sum, order) => sum + order.total * percent,
-        initialValue) + rate
+        initialValue) + rate).toFixed(2)
   }
 },
 methods: {
@@ -175,6 +175,10 @@ methods: {
     if (this.interval) {
       window.clearInterval(this.interval)
     }
+  },
+  calcEarn(sum, percent){
+    let total = sum * percent
+    return total.toFixed(2)
   },
   startTimer () {
     this.stopTimer()
